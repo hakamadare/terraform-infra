@@ -7,27 +7,27 @@ locals {
   vpc_azs   = "${slice(data.aws_availability_zones.available.names, 0, local.limit_azs)}"
 
   vpc_public_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 16, 1)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 2)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 3)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 1)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 2)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 3)}",
   ]
 
   vpc_private_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 16, 10)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 20)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 30)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 10)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 20)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 30)}",
   ]
 
   vpc_database_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 16, 101)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 102)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 103)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 101)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 102)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 103)}",
   ]
 
   vpc_intra_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 16, 111)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 112)}",
-    "${cidrsubnet(var.vpc_cidr, 16, 113)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 111)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 112)}",
+    "${cidrsubnet(var.vpc_cidr, 8, 113)}",
   ]
 }
 
@@ -58,7 +58,15 @@ module "vpc" {
     "tier" = "public"
   }
 
+  public_route_table_tags = {
+    "tier" = "public"
+  }
+
   private_subnet_tags = {
+    "tier" = "private"
+  }
+
+  private_route_table_tags = {
     "tier" = "private"
   }
 
@@ -67,6 +75,10 @@ module "vpc" {
   }
 
   intra_subnet_tags = {
+    "tier" = "intra"
+  }
+
+  intra_route_table_tags = {
     "tier" = "intra"
   }
 
