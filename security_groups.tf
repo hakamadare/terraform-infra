@@ -9,7 +9,7 @@ resource "aws_security_group" "public" {
     tier        = "public"
     environment = "production"
     datacenter  = "${var.datacenter}"
-    region      = "${data.aws_region.current.name}"
+    region      = "${local.region}"
   }
 }
 

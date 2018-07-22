@@ -8,6 +8,36 @@ variable "datacenter" {
   type = "string"
 }
 
+variable "ec2_keypair" {
+  type = "string"
+}
+
+variable "ecs_servers" {
+  type = "string"
+}
+
+variable "ecs_min_servers" {
+  type    = "string"
+  default = 2
+}
+
+variable "ecs_instance_type" {
+  type = "string"
+}
+
+variable "ecs_docker_storage_size" {
+  type    = "string"
+  default = 22
+}
+
+variable "ecs_dockerhub_email" {
+  type = "string"
+}
+
+variable "ecs_dockerhub_token" {
+  type = "string"
+}
+
 variable "vpc_name" {
   type = "string"
 }
