@@ -38,6 +38,10 @@ variable "ecs_dockerhub_token" {
   type = "string"
 }
 
+variable "apigw_deploy_stage" {
+  type = "string"
+}
+
 variable "rest_api_root" {
   type = "string"
 }
