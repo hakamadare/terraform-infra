@@ -6,18 +6,18 @@ locals {
 }
 
 module "infra" {
-  source              = "github.com/terraform-community-modules/tf_aws_ecs?ref=v5.2.0"
-  name                = "infra-${local.region}-${var.env}"
-  key_name            = "${var.ec2_keypair}"
-  vpc_id              = "${module.vpc.vpc_id}"
-  region              = "${local.region}"
-  subnet_id           = ["${module.vpc.private_subnets}"]
-  servers             = "${var.ecs_servers}"
-  min_servers         = "${var.ecs_min_servers}"
-  instance_type       = "${var.ecs_instance_type}"
-  iam_path            = "${local.ecs_iam_path}"
-  dockerhub_email     = "${var.ecs_dockerhub_email}"
-  dockerhub_token     = "${var.ecs_dockerhub_token}"
+  source          = "github.com/terraform-community-modules/tf_aws_ecs?ref=v5.2.0"
+  name            = "infra-${local.region}-${var.env}"
+  key_name        = "${var.ec2_keypair}"
+  vpc_id          = "${module.vpc.vpc_id}"
+  region          = "${local.region}"
+  subnet_id       = ["${module.vpc.private_subnets}"]
+  servers         = "${var.ecs_servers}"
+  min_servers     = "${var.ecs_min_servers}"
+  instance_type   = "${var.ecs_instance_type}"
+  iam_path        = "${local.ecs_iam_path}"
+  dockerhub_email = "${var.ecs_dockerhub_email}"
+  dockerhub_token = "${var.ecs_dockerhub_token}"
 
   extra_tags = [
     {

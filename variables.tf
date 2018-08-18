@@ -38,6 +38,10 @@ variable "ecs_dockerhub_token" {
   type = "string"
 }
 
+variable "rest_api_root" {
+  type = "string"
+}
+
 variable "vpc_name" {
   type = "string"
 }
