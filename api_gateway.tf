@@ -31,6 +31,7 @@ resource "aws_api_gateway_integration" "synapsewear" {
 
   request_templates = {
     "application/json" = "${data.template_file.synapsewear_apigw_request_template_application-json.rendered}"
+    "application/x-www-form-urlencoded" = "${data.template_file.synapsewear_apigw_request_template_application-x-www-form-urlencoded.rendered}"
   }
 
   depends_on = [
@@ -87,6 +88,14 @@ resource "aws_api_gateway_deployment" "synapsewear" {
 
 data "template_file" "synapsewear_apigw_request_template_application-json" {
   template = "${file("${path.module}/templates/synapsewear_apigw_request_template_application-json.tmpl")}"
+
+  vars {
+    stream = "${aws_kinesis_firehose_delivery_stream.synapsewear.name}"
+  }
+}
+
+data "template_file" "synapsewear_apigw_request_template_application-x-www-form-urlencoded" {
+  template = "${file("${path.module}/templates/synapsewear_apigw_request_template_application-x-www-form-urlencoded.tmpl")}"
 
   vars {
     stream = "${aws_kinesis_firehose_delivery_stream.synapsewear.name}"
