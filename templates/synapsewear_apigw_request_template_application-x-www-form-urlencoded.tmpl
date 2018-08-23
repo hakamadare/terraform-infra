@@ -3,7 +3,7 @@
 #set( $traceid = "traceid")
 #set( $body = $input.body )
 #set( $quote = '"' )
-#set( $b64 = $util.base64Encode("{$quote$traceid$quote:$quote$traceidval$quote,$quote$bodyname$quote:$body}") )
+#set( $b64 = $util.base64Encode("{$quote$traceid$quote:$quote$traceidval$quote,$quote$bodyname$quote:$quote$body$quote}") )
 #set( $contentType = "Content-Type" )
 #set( $applicationJson = "application/json" )
 #set( $context.requestOverride.header.contentType = $applicationJson )
