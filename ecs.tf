@@ -49,3 +49,7 @@ data "template_file" "infra_user_data" {
     ecs_volumes_path = "${local.ecs_volumes_path}"
   }
 }
+
+data "aws_iam_role" "ecs_service_role" {
+  name = "AWSServiceRoleForECS"
+}

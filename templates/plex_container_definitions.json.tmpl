@@ -1,0 +1,50 @@
+[
+  {
+    "name": "${name}",
+    "image": "${image}",
+    "portMappings": [
+      {
+        "containerPort": ${port},
+        "hostPort": 0,
+        "protocol": "tcp"
+      }
+    ],
+    "essential": true,
+    "environment": [
+      {
+        "name": "TZ",
+        "value": "${tz}"
+      },
+      {
+        "name": "PLEX_CLAIM",
+        "value": "${plex_claim}"
+      },
+      {
+        "name": "ADVERTISE_IP",
+        "value": "${advertise_ip}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "${database_volume}",
+        "containerPath": "/config"
+      },
+      {
+        "sourceVolume": "${transcode_volume}",
+        "containerPath": "/transcode"
+      },
+      {
+        "sourceVolume": "${media_volume}",
+        "containerPath": "/data"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${awslogs_group}",
+        "awslogs-region": "${awslogs_region}",
+        "awslogs-stream-prefix": "${awslogs_stream_prefix}"
+      }
+    }
+  }
+]

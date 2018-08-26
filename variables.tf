@@ -54,3 +54,37 @@ variable "vpc_cidr" {
   type    = "string"
   default = "10.0.0.0/16"
 }
+
+variable "plex_docker_image" {
+  type = "string"
+}
+
+variable "plex_memory_hard_limit" {
+  type = "string"
+}
+
+variable "plex_memory_soft_limit" {
+  type = "string"
+}
+
+variable "plex_port" {
+  type    = "string"
+  default = "32400"
+}
+
+variable "plex_tz" {
+  type = "string"
+}
+
+variable "plex_plex_claim" {
+  type = "string"
+}
+
+variable "plex_desired_count" {
+  type    = "string"
+  default = "1"
+}
+
+variable "plex_fqdn" {
+  type = "string"
+}
