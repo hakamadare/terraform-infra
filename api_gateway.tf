@@ -30,7 +30,7 @@ resource "aws_api_gateway_integration" "synapsewear" {
   passthrough_behavior    = "WHEN_NO_TEMPLATES"
 
   request_templates = {
-    "application/json" = "${data.template_file.synapsewear_apigw_request_template_application-json.rendered}"
+    "application/json"                  = "${data.template_file.synapsewear_apigw_request_template_application-json.rendered}"
     "application/x-www-form-urlencoded" = "${data.template_file.synapsewear_apigw_request_template_application-x-www-form-urlencoded.rendered}"
   }
 

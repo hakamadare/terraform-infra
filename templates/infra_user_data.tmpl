@@ -1,0 +1,14 @@
+#cloud-config
+
+repo_upgrade: true
+repo_upgrade: all
+
+packages:
+  - amazon-efs-utils
+
+runcmd:
+  - mkdir -p ${ecs_volumes_path}
+  - echo "${file_system_id_volumes}:/ ${ecs_volumes_path} efs tls,_netdev" >> /etc/fstab
+  - mount -a -t efs defaults
+  - chown -R ec2-user:ec2-user ${ecs_volumes_path}
+  - service docker restart && start ecs

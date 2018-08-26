@@ -39,3 +39,8 @@ resource "aws_security_group_rule" "public-egress" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.public.id}"
 }
+
+data "aws_security_group" "ecs" {
+  name   = "ecs-sg-${local.ecs_infra_name}"
+  vpc_id = "${module.vpc.vpc_id}"
+}
