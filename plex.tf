@@ -39,10 +39,6 @@ resource "aws_ecs_task_definition" "plex" {
   }
 }
 
-data "local_file" "plex" {
-  filename = "${path.module}/templates/p_c_d_rendered.json"
-}
-
 resource "aws_ecs_service" "plex" {
   name            = "${local.plex_name}"
   cluster         = "${module.infra.cluster_id}"
@@ -78,7 +74,7 @@ data "aws_iam_role" "plex_ecs_execution_role" {
 }
 
 data "template_file" "plex_container_definitions" {
-  template = "${path.module}/templates/plex_container_definitions.json.tmpl"
+  template = "${file("${path.module}/templates/plex_container_definitions.json.tmpl")}"
 
   vars {
     name                  = "${local.plex_name}-pms"
