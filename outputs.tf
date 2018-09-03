@@ -27,7 +27,3 @@ output "vpc_database_cidrs" {
 output "infra_allowed_cidr_blocks" {
   value = ["${local.infra_allowed_cidr_blocks}"]
 }
-
-output "plex_container_definitions" {
-  value = "${data.template_file.plex_container_definitions.rendered}"
-}

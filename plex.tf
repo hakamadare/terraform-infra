@@ -1,19 +1,21 @@
 # plex service
 
 locals {
-  plex_fqdn               = "${var.plex_fqdn}"
-  plex_name               = "plex-${var.env}"
-  plex_desired_count      = "${var.plex_desired_count}"
-  plex_image              = "${var.plex_docker_image}"
-  plex_database_name      = "plex-${var.env}-database"
-  plex_transcode_name     = "plex-${var.env}-transcode"
-  plex_media_name         = "plex-${var.env}-media"
-  plex_memory             = "${var.plex_memory_hard_limit}"
-  plex_memory_reservation = "${var.plex_memory_soft_limit}"
-  plex_tz                 = "${var.plex_tz}"
-  plex_plex_claim         = "${var.plex_plex_claim}"
-  plex_advertise_ip       = "http://${local.plex_fqdn}:${local.plex_port}/"
-  plex_port               = "${var.plex_port}"
+  plex_fqdn                = "${var.plex_fqdn}"
+  plex_name                = "plex-${var.env}"
+  plex_desired_count       = "${var.plex_desired_count}"
+  plex_image               = "${var.plex_docker_image}"
+  plex_database_name       = "plex-${var.env}-database"
+  plex_transcode_name      = "plex-${var.env}-transcode"
+  plex_media_name          = "plex-${var.env}-media"
+  plex_memory              = "${var.plex_memory_hard_limit}"
+  plex_memory_reservation  = "${var.plex_memory_soft_limit}"
+  plex_tz                  = "${var.plex_tz}"
+  plex_plex_claim          = "${var.plex_plex_claim}"
+  plex_advertise_ip        = "https://${local.plex_fqdn}:${local.plex_port}"
+  plex_port                = "${var.plex_port}"
+  plex_healthcheck_path    = "/web"
+  plex_healthcheck_matcher = "200,301,302"
 }
 
 resource "aws_ecs_task_definition" "plex" {
@@ -77,7 +79,7 @@ data "template_file" "plex_container_definitions" {
   template = "${file("${path.module}/templates/plex_container_definitions.json.tmpl")}"
 
   vars {
-    name                  = "${local.plex_name}-pms"
+    name                  = "${local.plex_name}"
     image                 = "${local.plex_image}"
     memory                = "${local.plex_memory}"
     memoryReservation     = "${local.plex_memory_reservation}"
@@ -90,15 +92,20 @@ data "template_file" "plex_container_definitions" {
     media_volume          = "${local.plex_media_name}"
     awslogs_group         = "${local.plex_name}"
     awslogs_region        = "${local.region}"
-    awslogs_stream_prefix = "pms-"
+    awslogs_stream_prefix = "pms"
   }
 }
 
 resource "aws_lb_target_group" "plex" {
   name_prefix = "plex-"
   port        = "${local.plex_port}"
-  protocol    = "HTTPS"
+  protocol    = "HTTP"
   vpc_id      = "${module.vpc.vpc_id}"
+
+  health_check {
+    path    = "${local.plex_healthcheck_path}"
+    matcher = "${local.plex_healthcheck_matcher}"
+  }
 
   stickiness {
     type    = "lb_cookie"
@@ -111,6 +118,10 @@ resource "aws_lb_target_group" "plex" {
     "datacenter"  = "${var.datacenter}"
     "region"      = "${local.region}"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb" "plex" {
@@ -122,6 +133,10 @@ resource "aws_lb" "plex" {
   subnets = ["${module.vpc.public_subnets}"]
 
   security_groups = ["${data.aws_security_group.ecs.id}"]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_listener" "plex_pms" {
@@ -134,6 +149,10 @@ resource "aws_lb_listener" "plex_pms" {
   default_action {
     type             = "forward"
     target_group_arn = "${aws_lb_target_group.plex.arn}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -164,6 +183,18 @@ resource "aws_route53_record" "plex_cert_validation" {
   zone_id = "${data.aws_route53_zone.cloud_vecna_org.zone_id}"
   records = ["${aws_acm_certificate.plex.domain_validation_options.0.resource_record_value}"]
   ttl     = 60
+}
+
+resource "aws_route53_record" "plex_a" {
+  name    = "${local.plex_fqdn}"
+  zone_id = "${data.aws_route53_zone.cloud_vecna_org.zone_id}"
+  type    = "A"
+
+  alias {
+    name                   = "${aws_lb.plex.dns_name}"
+    zone_id                = "${aws_lb.plex.zone_id}"
+    evaluate_target_health = false
+  }
 }
 
 resource "aws_cloudwatch_log_group" "plex" {
