@@ -23,7 +23,3 @@ output "vpc_private_cidrs" {
 output "vpc_database_cidrs" {
   value = ["${local.vpc_database_cidrs}"]
 }
-
-output "infra_allowed_cidr_blocks" {
-  value = ["${local.infra_allowed_cidr_blocks}"]
-}
