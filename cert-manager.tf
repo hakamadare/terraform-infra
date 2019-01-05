@@ -2,7 +2,7 @@ locals {
   cert_manager_name            = "cert-manager"
   cert_manager_instance        = "${local.cert_manager_name}-${var.env}"
   cert_manager_version         = "v0.5.2"
-  cert_manager_chart_version   = "0.2.0"
+  cert_manager_chart_version   = "0.2.1"
   cert_manager_part_of         = "${var.datacenter}"
   cert_manager_managed_by      = "terraform"
   cert_manager_wait            = false
