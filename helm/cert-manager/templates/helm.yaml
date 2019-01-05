@@ -1,0 +1,43 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: helm-tls
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: helm-tls
+    app.kubernetes.io/instance: {{ template "cert-manager.name" . }}-{{ .Values.env }}
+    app.kubernetes.io/managed-by: Tiller
+    app.kubernetes.io/name: {{ template "cert-manager.name" . }}
+    app.kubernetes.io/part-of: {{ template "cert-manager.name" . }}-{{ .Chart.AppVersion }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+spec:
+  secretName: helm-tls
+  commonName: "Helm Client"
+  duration: 8760h
+  renewBefore: 72h
+  issuerRef:
+    name: intermediate-ca
+    kind: ClusterIssuer
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: tiller-tls
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: tiller-tls
+    app.kubernetes.io/instance: {{ template "cert-manager.name" . }}-{{ .Values.env }}
+    app.kubernetes.io/managed-by: Tiller
+    app.kubernetes.io/name: {{ template "cert-manager.name" . }}
+    app.kubernetes.io/part-of: {{ template "cert-manager.name" . }}-{{ .Chart.AppVersion }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+spec:
+  secretName: tiller-tls
+  dnsNames:
+    - tiller-deploy
+    - 127.0.0.1
+  duration: 8760h
+  renewBefore: 72h
+  issuerRef:
+    name: intermediate-ca
+    kind: ClusterIssuer
