@@ -1,0 +1,8 @@
+# Default values for cert-manager.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Values for this chart
+
+# Identifier for the environment in which this chart is deployed
+env:
