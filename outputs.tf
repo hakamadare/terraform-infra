@@ -23,3 +23,11 @@ output "vpc_private_cidrs" {
 output "vpc_database_cidrs" {
   value = ["${local.vpc_database_cidrs}"]
 }
+
+output "tiller_namespace" {
+  value = "${local.tiller_namespace}"
+}
+
+output "tiller_service_account" {
+  value = "${local.tiller_service_account}"
+}
