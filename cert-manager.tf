@@ -2,6 +2,7 @@ locals {
   cert_manager_name            = "cert-manager"
   cert_manager_instance        = "${local.cert_manager_name}-${var.env}"
   cert_manager_version         = "v0.5.2"
+  cert_manager_chart_version   = "0.2.0"
   cert_manager_part_of         = "${var.datacenter}"
   cert_manager_managed_by      = "terraform"
   cert_manager_wait            = false
@@ -41,7 +42,7 @@ resource "kubernetes_namespace" "cert_manager" {
 resource "helm_release" "cert_manager" {
   name          = "${local.cert_manager_name}"
   namespace     = "${local.cert_manager_namespace}"
-  version       = "0.1.0"
+  version       = "${local.cert_manager_chart_version}"
   chart         = "${path.module}/helm/cert-manager"
   wait          = "${local.cert_manager_wait}"
   force_update  = "${local.cert_manager_force_update}"
