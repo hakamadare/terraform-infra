@@ -1,0 +1,26 @@
+# see https://github.com/jetstack/cert-manager/issues/659
+#
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aggregate-cert-manager-admin
+  labels:
+    # Add these permissions to the "admin" and "edit" default roles.
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+rules:
+- apiGroups: ["certmanager.k8s.io"]
+  resources: ["certificates", "clusterissuers", "issuers"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aggregate-cert-manager-view
+  labels:
+    # Add these permissions to the "view" default role.
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+rules:
+- apiGroups: ["certmanager.k8s.io"]
+  resources: ["certificates", "clusterissuers", "issuers"]
+  verbs: ["get", "list", "watch"]

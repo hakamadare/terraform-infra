@@ -6,10 +6,6 @@ cert-manager:
   image:
     tag: ${version}
 
-  serviceAccount:
-    create: true
-    name: ${service_account}
-
   podLabels:
     app.kubernetes.io/name: ${name}
     app.kubernetes.io/instance: ${name}-${env}
