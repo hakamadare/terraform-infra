@@ -3,7 +3,12 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "~> 0.7"
+  version            = "~> 0.7"
+  enable_tls         = true
+  client_key         = "${pathexpand("~/.helm/key.pem")}"
+  client_certificate = "${pathexpand("~/.helm/cert.pem")}"
+  ca_certificate     = "${pathexpand("~/.helm/ca.pem")}"
+  insecure           = true
 }
 
 # Helm/Tiller

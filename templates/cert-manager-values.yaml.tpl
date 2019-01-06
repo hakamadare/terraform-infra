@@ -10,9 +10,6 @@ cert-manager:
     create: true
     name: ${service_account}
 
-  extraArgs:
-    - --cluster-resource-namespace=${namespace}
-
   podLabels:
     app.kubernetes.io/name: ${name}
     app.kubernetes.io/instance: ${name}-${env}
@@ -20,5 +17,8 @@ cert-manager:
     app.kubernetes.io/component: ${name}
     app.kubernetes.io/part-of: ${name}-${version}
     app.kubernetes.io/managed-by: Tiller
+
+  podAnnotations:
+    iam.amazonaws.com/role: ${iam_role}
 
 #  vim: set et fenc= ff=unix ft=yaml sts=2 sw=2 ts=2 : 

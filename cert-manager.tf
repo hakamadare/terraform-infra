@@ -10,6 +10,7 @@ locals {
   cert_manager_recreate_pods   = true
   cert_manager_namespace       = "${local.cert_manager_name}"
   cert_manager_service_account = "${local.cert_manager_name}"
+  cert_manager_iam_role        = "${aws_iam_role.cert_manager.name}"
 }
 
 data "template_file" "cert_manager_values" {
@@ -20,13 +21,17 @@ data "template_file" "cert_manager_values" {
     env             = "${var.env}"
     version         = "${local.cert_manager_version}"
     service_account = "${local.cert_manager_service_account}"
-    namespace       = "${local.cert_manager_namespace}"
+    iam_role        = "${local.cert_manager_iam_role}"
   }
 }
 
 resource "kubernetes_namespace" "cert_manager" {
   metadata {
     name = "${local.cert_manager_name}"
+
+    annotations {
+      "iam.amazonaws.com/permitted" = "^${local.cert_manager_name}-.*"
+    }
 
     labels {
       "app.kubernetes.io/name"       = "${local.cert_manager_name}"
@@ -51,4 +56,64 @@ resource "helm_release" "cert_manager" {
   values = [
     "${data.template_file.cert_manager_values.rendered}",
   ]
+}
+
+# IAM roles
+data "aws_iam_policy_document" "cert_manager_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${local.kiam_assume_role_arn}"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "cert_manager" {
+  statement {
+    actions = [
+      "route53:GetChange",
+    ]
+
+    resources = ["arn:aws:route53:::change/*"]
+  }
+
+  statement {
+    actions = [
+      "route53:ChangeResourceRecordSets",
+    ]
+
+    resources = ["arn:aws:route53:::hostedzone/*"]
+  }
+
+  statement {
+    actions = [
+      "route53:ListHostedZonesByName",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role" "cert_manager" {
+  name_prefix        = "cert-manager-"
+  description        = "Role to be assumed by cert-manager processes"
+  assume_role_policy = "${data.aws_iam_policy_document.cert_manager_assume_role_policy.json}"
+}
+
+resource "aws_iam_policy" "cert_manager" {
+  name_prefix = "cert-manager-"
+  description = "Privileges for cert-manager processes"
+  policy      = "${data.aws_iam_policy_document.cert_manager.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "cert_manager" {
+  role       = "${aws_iam_role.cert_manager.name}"
+  policy_arn = "${aws_iam_policy.cert_manager.arn}"
 }
