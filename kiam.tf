@@ -2,7 +2,7 @@ locals {
   kiam_name            = "kiam"
   kiam_instance        = "${local.kiam_name}-${var.env}"
   kiam_version         = "v3.0"
-  kiam_chart_version   = "0.1.0"
+  kiam_chart_version   = "0.1.1"
   kiam_part_of         = "${var.datacenter}"
   kiam_managed_by      = "terraform"
   kiam_wait            = false

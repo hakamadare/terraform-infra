@@ -3,19 +3,12 @@ kind: Certificate
 metadata:
   name: {{ template "kiam.name" . }}-agent
   namespace: {{ .Release.Namespace }}
-  labels:
-    "app.kubernetes.io/name": {{ template "kiam.name" . }}
-    "app.kubernetes.io/instance": {{ template "kiam.chart" . }}
-    "app.kubernetes.io/version": {{ .Release.AppVersion }}
-    "app.kubernetes.io/component": agent
-    "app.kubernetes.io/part-of": {{ template "kiam.chart" . }}
-    "app.kubernetes.io/managed-by": Tiller
 
 spec:
   secretName: {{ template "kiam.name" . }}-agent
   issuerRef:
-    name: intermediate-ca
-    kind: ClusterIssuer
+    name: root-ca
+    kind: Issuer
   commonName: "Kiam Agent"
 ---
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -23,19 +16,12 @@ kind: Certificate
 metadata:
   name: {{ template "kiam.name" . }}-server
   namespace: {{ .Release.Namespace }}
-  labels:
-    "app.kubernetes.io/name": {{ template "kiam.name" . }}
-    "app.kubernetes.io/instance": {{ template "kiam.chart" . }}
-    "app.kubernetes.io/version": {{ .Release.AppVersion }}
-    "app.kubernetes.io/component": agent
-    "app.kubernetes.io/part-of": {{ template "kiam.chart" . }}
-    "app.kubernetes.io/managed-by": Tiller
 
 spec:
   secretName: {{ template "kiam.name" . }}-server
   issuerRef:
-    name: intermediate-ca
-    kind: ClusterIssuer
+    name: root-ca
+    kind: Issuer
   dnsNames:
     - {{ template "kiam.name" . }}-server
     - 127.0.0.1
