@@ -9,8 +9,8 @@ locals {
   kiam_force_update    = false
   kiam_recreate_pods   = true
   kiam_namespace       = "${local.kiam_name}"
-  kiam_agent_secret    = "${local.kiam_name}-agent"
-  kiam_server_secret   = "${local.kiam_name}-server"
+  kiam_agent_secret    = "${local.kiam_name}-agent-tls-ca"
+  kiam_server_secret   = "${local.kiam_name}-server-tls-ca"
   kiam_assume_role_arn = "${aws_iam_role.kiam_server_process.arn}"
 }
 
