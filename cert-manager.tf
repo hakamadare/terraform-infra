@@ -26,22 +26,22 @@ data "template_file" "cert_manager_values" {
 resource "kubernetes_namespace" "cert_manager" {
    metadata {
      name = "${local.cert_manager_name}"
- 
+
      annotations {
        "iam.amazonaws.com/permitted" = "^${local.cert_manager_name}-.*"
      }
- 
+
      labels {
-       "app.kubernetes.io/name"       = "${local.cert_manager_name}"
-       "app.kubernetes.io/instance"   = "${local.cert_manager_instance}"
-       "app.kubernetes.io/version"    = "${local.cert_manager_version}"
        "app.kubernetes.io/component"  = "cert-manager"
-       "app.kubernetes.io/part-of"    = "${local.cert_manager_part_of}"
+       "app.kubernetes.io/instance"   = "${local.cert_manager_instance}"
        "app.kubernetes.io/managed-by" = "${local.cert_manager_managed_by}"
+       "app.kubernetes.io/name"       = "${local.cert_manager_name}"
+       "app.kubernetes.io/part-of"    = "${local.cert_manager_part_of}"
+       "app.kubernetes.io/version"    = "${local.cert_manager_version}"
      }
    }
  }
- 
+
 
 resource "helm_release" "cert_manager" {
   name          = "${local.cert_manager_name}"

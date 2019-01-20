@@ -33,4 +33,8 @@ kiam:
 
     tlsSecret: ${server_secret}
 
+    extraEnv:
+      GRPC_GO_LOG_SEVERITY_LEVEL: info
+      GRPC_GO_LOG_VERBOSITY: 8
+
 #  vim: set et fenc= ff=unix ft=yaml sts=2 sw=2 ts=2 : 
