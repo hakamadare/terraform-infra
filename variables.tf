@@ -88,3 +88,7 @@ variable "plex_desired_count" {
 variable "plex_fqdn" {
   type = "string"
 }
+
+variable "acme_email" {
+  type = "string"
+}

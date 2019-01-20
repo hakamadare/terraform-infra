@@ -7,13 +7,16 @@
 kiam:
   agent:
     host:
-      interface: "!eth0"
+      interface: "!ens5"
 
     extraHostPathMounts:
       - name: ssl-certs
         mountPath: /etc/ssl/certs
         hostPath: /etc/pki/ca-trust/extracted/pem
         readOnly: true
+
+    extraEnv:
+      GRPC_GO_LOG_SEVERITY_LEVEL: info
 
   server:
     probes:
@@ -26,3 +29,6 @@ kiam:
         readOnly: true
 
     useHostNetwork: true
+
+    extraEnv:
+      GRPC_GO_LOG_SEVERITY_LEVEL: info

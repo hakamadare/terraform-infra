@@ -3,6 +3,13 @@
 # Declare variables to be passed into your templates.
 
 # Values for this chart
+letsencrypt:
+  env:
+    staging: https://acme-staging-v02.api.letsencrypt.org/directory
+    prod: https://acme-v02.api.letsencrypt.org/directory
 
 # Identifier for the environment in which this chart is deployed
 env:
+
+# Values for the upstream chart:
+cert-manager:

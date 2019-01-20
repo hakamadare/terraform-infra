@@ -1,47 +1,50 @@
 locals {
-  cert_manager_name            = "cert-manager"
-  cert_manager_instance        = "${local.cert_manager_name}-${var.env}"
-  cert_manager_version         = "v0.5.2"
-  cert_manager_chart_version   = "0.4.4"
-  cert_manager_part_of         = "${var.datacenter}"
-  cert_manager_managed_by      = "terraform"
-  cert_manager_wait            = false
-  cert_manager_force_update    = false
-  cert_manager_recreate_pods   = true
-  cert_manager_namespace       = "${kubernetes_namespace.cert_manager.metadata.0.name}"
-  cert_manager_iam_role        = "${aws_iam_role.cert_manager.name}"
+  cert_manager_name           = "cert-manager"
+  cert_manager_instance       = "${local.cert_manager_name}-${var.env}"
+  cert_manager_version        = "v0.5.2"
+  cert_manager_chart_version  = "0.4.4"
+  cert_manager_part_of        = "${var.datacenter}"
+  cert_manager_managed_by     = "terraform"
+  cert_manager_wait           = false
+  cert_manager_force_update   = false
+  cert_manager_recreate_pods  = true
+  cert_manager_namespace      = "${kubernetes_namespace.cert_manager.metadata.0.name}"
+  cert_manager_iam_role       = "${aws_iam_role.cert_manager.name}"
+  cert_manager_acme_email     = "${var.acme_email}"
+  cert_manager_route53_region = "${data.aws_region.current.name}"
 }
 
 data "template_file" "cert_manager_values" {
   template = "${file("${path.module}/templates/cert-manager-values.yaml.tpl")}"
 
   vars {
-    name            = "${local.cert_manager_name}"
-    env             = "${var.env}"
-    version         = "${local.cert_manager_version}"
-    iam_role        = "${local.cert_manager_iam_role}"
+    name       = "${local.cert_manager_name}"
+    env        = "${var.env}"
+    version    = "${local.cert_manager_version}"
+    iam_role   = "${local.cert_manager_iam_role}"
+    region     = "${local.cert_manager_route53_region}"
+    acme_email = "${local.cert_manager_acme_email}"
   }
 }
 
 resource "kubernetes_namespace" "cert_manager" {
-   metadata {
-     name = "${local.cert_manager_name}"
+  metadata {
+    name = "${local.cert_manager_name}"
 
-     annotations {
-       "iam.amazonaws.com/permitted" = "^${local.cert_manager_name}-.*"
-     }
+    annotations {
+      "iam.amazonaws.com/permitted" = "^${local.cert_manager_name}-.*"
+    }
 
-     labels {
-       "app.kubernetes.io/component"  = "cert-manager"
-       "app.kubernetes.io/instance"   = "${local.cert_manager_instance}"
-       "app.kubernetes.io/managed-by" = "${local.cert_manager_managed_by}"
-       "app.kubernetes.io/name"       = "${local.cert_manager_name}"
-       "app.kubernetes.io/part-of"    = "${local.cert_manager_part_of}"
-       "app.kubernetes.io/version"    = "${local.cert_manager_version}"
-     }
-   }
- }
-
+    labels {
+      "app.kubernetes.io/component"  = "cert-manager"
+      "app.kubernetes.io/instance"   = "${local.cert_manager_instance}"
+      "app.kubernetes.io/managed-by" = "${local.cert_manager_managed_by}"
+      "app.kubernetes.io/name"       = "${local.cert_manager_name}"
+      "app.kubernetes.io/part-of"    = "${local.cert_manager_part_of}"
+      "app.kubernetes.io/version"    = "${local.cert_manager_version}"
+    }
+  }
+}
 
 resource "helm_release" "cert_manager" {
   name          = "${local.cert_manager_name}"

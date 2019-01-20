@@ -1,6 +1,12 @@
 # Values for our chart
 env: ${env}
 
+route53:
+  region: ${region}
+
+acme:
+  email: ${acme_email}
+
 # Values for the upstream cert-manager chart
 cert-manager:
   image:

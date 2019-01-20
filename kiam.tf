@@ -1,17 +1,19 @@
 locals {
-  kiam_chart_version   = "0.1.2"
-  kiam_name            = "kiam"
-  kiam_instance        = "${local.kiam_name}-${var.env}"
-  kiam_version         = "v3.0"
-  kiam_part_of         = "${var.datacenter}"
-  kiam_managed_by      = "terraform"
-  kiam_wait            = false
-  kiam_force_update    = false
-  kiam_recreate_pods   = true
-  kiam_namespace       = "${local.kiam_name}"
+  kiam_chart_version = "0.1.2"
+  kiam_name          = "kiam"
+  kiam_instance      = "${local.kiam_name}-${var.env}"
+  kiam_version       = "v3.0"
+  kiam_part_of       = "${var.datacenter}"
+  kiam_managed_by    = "Tiller"
+  kiam_wait          = false
+  kiam_force_update  = false
+  kiam_recreate_pods = true
+  kiam_namespace     = "${local.kiam_name}"
+
   # kiam_agent_secret    = "${local.kiam_name}-agent-tls-ca"
   # kiam_server_secret   = "${local.kiam_name}-server-tls-ca"
-  kiam_agent_secret    = "${local.kiam_name}-agent-manual-tls"
+  kiam_agent_secret = "${local.kiam_name}-agent-manual-tls"
+
   kiam_server_secret   = "${local.kiam_name}-server-manual-tls"
   kiam_assume_role_arn = "${aws_iam_role.kiam_server_process.arn}"
 }
