@@ -12,11 +12,23 @@ locals {
     "${cidrsubnet(var.vpc_cidr, 8, 3)}",
   ]
 
+  vpc_public_subnet_tags = {
+    "tier"                                            = "public"
+    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                          = "shared"
+  }
+
   vpc_private_cidrs = [
     "${cidrsubnet(var.vpc_cidr, 8, 10)}",
     "${cidrsubnet(var.vpc_cidr, 8, 20)}",
     "${cidrsubnet(var.vpc_cidr, 8, 30)}",
   ]
+
+  vpc_private_subnet_tags = {
+    "tier"                                            = "private"
+    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/internal_elb"                 = 1
+  }
 
   vpc_database_cidrs = [
     "${cidrsubnet(var.vpc_cidr, 8, 101)}",
@@ -24,11 +36,19 @@ locals {
     "${cidrsubnet(var.vpc_cidr, 8, 103)}",
   ]
 
+  vpc_database_subnet_tags = {
+    "tier" = "database"
+  }
+
   vpc_intra_cidrs = [
     "${cidrsubnet(var.vpc_cidr, 8, 111)}",
     "${cidrsubnet(var.vpc_cidr, 8, 112)}",
     "${cidrsubnet(var.vpc_cidr, 8, 113)}",
   ]
+
+  vpc_intra_subnet_tags = {
+    "tier" = "intra"
+  }
 }
 
 module "vpc" {
@@ -54,28 +74,17 @@ module "vpc" {
   database_subnets = ["${local.vpc_database_cidrs}"]
   intra_subnets    = ["${local.vpc_intra_cidrs}"]
 
-  public_subnet_tags = {
-    "tier" = "public"
-  }
+  public_subnet_tags   = "${local.vpc_public_subnet_tags}"
+  private_subnet_tags  = "${local.vpc_private_subnet_tags}"
+  database_subnet_tags = "${local.vpc_database_subnet_tags}"
+  intra_subnet_tags    = "${local.vpc_intra_subnet_tags}"
 
   public_route_table_tags = {
     "tier" = "public"
   }
 
-  private_subnet_tags = {
-    "tier" = "private"
-  }
-
   private_route_table_tags = {
     "tier" = "private"
-  }
-
-  database_subnet_tags = {
-    "tier" = "database"
-  }
-
-  intra_subnet_tags = {
-    "tier" = "intra"
   }
 
   intra_route_table_tags = {
@@ -85,9 +94,10 @@ module "vpc" {
   create_database_subnet_group = true
 
   tags {
-    environment = "production"
-    datacenter  = "${var.datacenter}"
-    region      = "${data.aws_region.current.name}"
+    environment                                       = "production"
+    datacenter                                        = "${var.datacenter}"
+    region                                            = "${data.aws_region.current.name}"
+    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
   }
 
   enable_s3_endpoint       = true

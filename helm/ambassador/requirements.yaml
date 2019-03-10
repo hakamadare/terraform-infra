@@ -1,4 +1,4 @@
 dependencies:
   - name: ambassador
-    version: 0.40.2
-    repository: "@datawire"
+    version: 1.1.5
+    repository: "@stable"
