@@ -1,3 +1,13 @@
+tls:
+  commonName: ${tls_commonname}
+  secret: ${tls_secret}
+  issuer:
+    name: ${acme_issuer}
+    kind: ${acme_issuer_kind}
+
+acme:
+  provider: ${acme_provider}
+
 ambassador:
   # use a DaemonSet with NLBs
   daemonSet: ${daemonset}

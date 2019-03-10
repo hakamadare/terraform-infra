@@ -14,6 +14,8 @@ locals {
   # kiam_server_secret   = "${local.kiam_name}-server-tls-ca"
   kiam_agent_secret = "${local.kiam_name}-agent-manual-tls"
 
+  kiam_agent_host_interface = "!eth0"
+
   kiam_server_secret   = "${local.kiam_name}-server-manual-tls"
   kiam_assume_role_arn = "${aws_iam_role.kiam_server_process.arn}"
 }
@@ -29,6 +31,7 @@ data "template_file" "kiam_values" {
     agent_secret    = "${local.kiam_agent_secret}"
     server_secret   = "${local.kiam_server_secret}"
     assume_role_arn = "${local.kiam_assume_role_arn}"
+    host_interface  = "${local.kiam_agent_host_interface}"
   }
 }
 
