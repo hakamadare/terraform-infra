@@ -1,5 +1,4 @@
-
 dependencies:
   - name: kiam
-    version: v2.0.1-rc3
+    version: v2.1.0
     repository: "@stable"

@@ -2,7 +2,7 @@ locals {
   kiam_chart_version = "0.1.2"
   kiam_name          = "kiam"
   kiam_instance      = "${local.kiam_name}-${var.env}"
-  kiam_version       = "v3.0"
+  kiam_version       = "v3.1"
   kiam_part_of       = "${var.datacenter}"
   kiam_managed_by    = "Tiller"
   kiam_wait          = false

@@ -1,4 +1,4 @@
 dependencies:
   - name: cert-manager
-    version: v0.5.2
+    version: v0.6.6
     repository: "@stable"

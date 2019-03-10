@@ -1,8 +1,8 @@
 locals {
   cert_manager_name           = "cert-manager"
   cert_manager_instance       = "${local.cert_manager_name}-${var.env}"
-  cert_manager_version        = "v0.5.2"
-  cert_manager_chart_version  = "0.4.4"
+  cert_manager_version        = "v0.6.2"
+  cert_manager_chart_version  = "0.6.6"
   cert_manager_part_of        = "${var.datacenter}"
   cert_manager_managed_by     = "terraform"
   cert_manager_wait           = false
@@ -36,12 +36,13 @@ resource "kubernetes_namespace" "cert_manager" {
     }
 
     labels {
-      "app.kubernetes.io/component"  = "cert-manager"
-      "app.kubernetes.io/instance"   = "${local.cert_manager_instance}"
-      "app.kubernetes.io/managed-by" = "${local.cert_manager_managed_by}"
-      "app.kubernetes.io/name"       = "${local.cert_manager_name}"
-      "app.kubernetes.io/part-of"    = "${local.cert_manager_part_of}"
-      "app.kubernetes.io/version"    = "${local.cert_manager_version}"
+      "app.kubernetes.io/component"           = "cert-manager"
+      "app.kubernetes.io/instance"            = "${local.cert_manager_instance}"
+      "app.kubernetes.io/managed-by"          = "${local.cert_manager_managed_by}"
+      "app.kubernetes.io/name"                = "${local.cert_manager_name}"
+      "app.kubernetes.io/part-of"             = "${local.cert_manager_part_of}"
+      "app.kubernetes.io/version"             = "${local.cert_manager_version}"
+      "certmanager.k8s.io/disable-validation" = "true"
     }
   }
 }
@@ -49,7 +50,6 @@ resource "kubernetes_namespace" "cert_manager" {
 resource "helm_release" "cert_manager" {
   name          = "${local.cert_manager_name}"
   namespace     = "${local.cert_manager_namespace}"
-  version       = "${local.cert_manager_chart_version}"
   chart         = "${path.module}/helm/cert-manager"
   wait          = "${local.cert_manager_wait}"
   force_update  = "${local.cert_manager_force_update}"
