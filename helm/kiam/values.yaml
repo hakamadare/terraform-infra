@@ -8,6 +8,7 @@ kiam:
   agent:
     host:
       interface: "!ens5"
+      iptables: true
 
     extraHostPathMounts:
       - name: ssl-certs
@@ -17,6 +18,11 @@ kiam:
 
     extraEnv:
       GRPC_GO_LOG_SEVERITY_LEVEL: info
+
+    tlsCerts:
+      certFileName: "tls.crt"
+      keyFileName: "tls.key"
+      caFileName: "ca.crt"
 
   server:
     probes:
@@ -32,3 +38,8 @@ kiam:
 
     extraEnv:
       GRPC_GO_LOG_SEVERITY_LEVEL: info
+
+    tlsCerts:
+      certFileName: "tls.crt"
+      keyFileName: "tls.key"
+      caFileName: "ca.crt"

@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 
 spec:
-  secretName: {{ template "kiam.name" . }}-agent
+  secretName: {{ template "kiam.name" . }}-agent-tls
   issuerRef:
     name: root-ca
     kind: Issuer
@@ -18,10 +18,11 @@ metadata:
   namespace: {{ .Release.Namespace }}
 
 spec:
-  secretName: {{ template "kiam.name" . }}-server
+  secretName: {{ template "kiam.name" . }}-server-tls
   issuerRef:
     name: root-ca
     kind: Issuer
   dnsNames:
     - {{ template "kiam.name" . }}-server
+  ipAddresses:
     - 127.0.0.1

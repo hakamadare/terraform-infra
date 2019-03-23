@@ -1,5 +1,4 @@
 locals {
-  kiam_chart_version = "0.1.2"
   kiam_name          = "kiam"
   kiam_instance      = "${local.kiam_name}-${var.env}"
   kiam_version       = "v3.1"
@@ -10,13 +9,11 @@ locals {
   kiam_recreate_pods = true
   kiam_namespace     = "${local.kiam_name}"
 
-  # kiam_agent_secret    = "${local.kiam_name}-agent-tls-ca"
-  # kiam_server_secret   = "${local.kiam_name}-server-tls-ca"
-  kiam_agent_secret = "${local.kiam_name}-agent-manual-tls"
+  kiam_agent_secret    = "${local.kiam_name}-agent-tls"
+  kiam_server_secret   = "${local.kiam_name}-server-tls"
+  # kiam_agent_secret = "${local.kiam_name}-agent-manual-tls"
 
-  kiam_agent_host_interface = "!eth0"
-
-  kiam_server_secret   = "${local.kiam_name}-server-manual-tls"
+  # kiam_server_secret   = "${local.kiam_name}-server-manual-tls"
   kiam_assume_role_arn = "${aws_iam_role.kiam_server_process.arn}"
 }
 
@@ -31,7 +28,6 @@ data "template_file" "kiam_values" {
     agent_secret    = "${local.kiam_agent_secret}"
     server_secret   = "${local.kiam_server_secret}"
     assume_role_arn = "${local.kiam_assume_role_arn}"
-    host_interface  = "${local.kiam_agent_host_interface}"
   }
 }
 
@@ -53,7 +49,6 @@ resource "kubernetes_namespace" "kiam" {
 resource "helm_release" "kiam" {
   name          = "${local.kiam_name}"
   namespace     = "${local.kiam_namespace}"
-  version       = "${local.kiam_chart_version}"
   chart         = "${path.module}/helm/kiam"
   wait          = "${local.kiam_wait}"
   force_update  = "${local.kiam_force_update}"

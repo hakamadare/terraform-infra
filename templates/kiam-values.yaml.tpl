@@ -17,9 +17,6 @@ kiam:
 
     tlsSecret: ${agent_secret}
 
-    host:
-      interface: "${host_interface}"
-
   server:
     podLabels:
       app.kubernetes.io/name: ${name}

@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "v3.1"
 description: Install kiam using the upstream chart
 name: kiam
-version: 0.1.8
+version: 0.1.15
