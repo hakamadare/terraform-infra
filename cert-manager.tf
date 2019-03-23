@@ -1,8 +1,8 @@
 locals {
   cert_manager_name           = "cert-manager"
   cert_manager_instance       = "${local.cert_manager_name}-${var.env}"
-  cert_manager_version        = "v0.6.2"
-  cert_manager_chart_version  = "0.6.6"
+  cert_manager_version        = "v0.7.0"
+  cert_manager_chart_version  = "v0.7.0"
   cert_manager_part_of        = "${var.datacenter}"
   cert_manager_managed_by     = "terraform"
   cert_manager_wait           = false
@@ -45,6 +45,11 @@ resource "kubernetes_namespace" "cert_manager" {
       "certmanager.k8s.io/disable-validation" = "true"
     }
   }
+}
+
+data "helm_repository" "jetstack" {
+  name = "jetstack"
+  url = "https://charts.jetstack.io"
 }
 
 resource "helm_release" "cert_manager" {

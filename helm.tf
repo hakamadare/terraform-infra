@@ -1,9 +1,9 @@
 provider "kubernetes" {
-  version = "~> 1.4"
+  version = "~> 1.5"
 }
 
 provider "helm" {
-  version            = "~> 0.7"
+  version            = "~> 0.9"
   enable_tls         = true
   client_key         = "${pathexpand("~/.helm/key.pem")}"
   client_certificate = "${pathexpand("~/.helm/cert.pem")}"
@@ -15,7 +15,7 @@ provider "helm" {
 locals {
   helm_name        = "helm"
   helm_instance    = "${local.helm_name}-${var.env}"
-  helm_version     = "v2.12.1"
+  helm_version     = "v2.13.1"
   helm_part_of     = "${var.datacenter}"
   helm_managed_by  = "terraform"
   tiller_namespace = "kube-system"
