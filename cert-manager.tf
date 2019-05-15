@@ -6,7 +6,7 @@ locals {
   cert_manager_managed_by     = "terraform"
   cert_manager_wait           = false
   cert_manager_force_update   = false
-  cert_manager_recreate_pods  = true
+  cert_manager_recreate_pods  = false
   cert_manager_namespace      = "${kubernetes_namespace.cert_manager.metadata.0.name}"
   cert_manager_iam_role       = "${aws_iam_role.cert_manager.name}"
   cert_manager_acme_email     = "${var.acme_email}"
