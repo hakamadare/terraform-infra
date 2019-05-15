@@ -1,7 +1,7 @@
 locals {
   kiam_name          = "kiam"
   kiam_instance      = "${local.kiam_name}-${var.env}"
-  kiam_version       = "v3.1"
+  kiam_version       = "v3.2"
   kiam_part_of       = "${var.datacenter}"
   kiam_managed_by    = "Tiller"
   kiam_wait          = false

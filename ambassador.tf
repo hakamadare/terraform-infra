@@ -36,7 +36,7 @@ data "template_file" "ambassador_values" {
   }
 }
 
-resource "helm_repository" "datawire" {
+data "helm_repository" "datawire" {
   name = "datawire"
   url  = "${local.ambassador_repo_url}"
 }
@@ -52,9 +52,5 @@ resource "helm_release" "ambassador" {
 
   values = [
     "${data.template_file.ambassador_values.rendered}",
-  ]
-
-  depends_on = [
-    "helm_repository.datawire",
   ]
 }
