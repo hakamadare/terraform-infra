@@ -7,11 +7,11 @@ locals {
 
 provider "aws" {
   region  = "us-east-1"
-  version = "~> 1.33"
+  version = "~> 2.10"
 }
 
 provider "template" {
-  version = "~> 1.0"
+  version = "~> 2.1"
 }
 
 data "aws_availability_zones" "available" {}

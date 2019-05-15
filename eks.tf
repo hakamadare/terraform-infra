@@ -6,7 +6,7 @@ locals {
   eks_aws_profile        = "${var.vpc_name}"
   eks_admin_username     = "${var.eks_admin_username}"
   eks_map_users_count    = "${length(local.eks_map_users)}"
-  eks_instance_type      = "t3a.small"
+  eks_instance_type      = "t3.small"
   eks_cluster_size       = "1"
   eks_cluster_min        = "1"
   eks_cluster_max        = "${local.eks_cluster_size + 1}"

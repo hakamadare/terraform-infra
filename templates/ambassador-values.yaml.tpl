@@ -23,17 +23,17 @@ ambassador:
       service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
       getambassador.io/config: |
         ---
-        apiVersion: ambassador/v0
+        apiVersion: ambassador/v1
         kind:  Module
         name:  ambassador
         config:
           use_remote_address: true
           use_proxy_proto: true
         ---
-        apiVersion: ambassador/v0
+        apiVersion: ambassador/v1
         kind: Module
         name: tls
         config:
           server:
             enabled: true
-            redirect_cleartext_from: 80
+            redirect_cleartext_from: 8080
