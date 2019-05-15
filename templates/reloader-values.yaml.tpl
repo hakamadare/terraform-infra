@@ -1,0 +1,3 @@
+reloader:
+  deployment:
+    image: "${version}"
