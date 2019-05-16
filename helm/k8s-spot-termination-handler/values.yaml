@@ -1,0 +1,10 @@
+# Default values for k8s-spot-termination-handler.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+k8s-spot-termination-handler:
+  image:
+    tag: "1.12.0-2"

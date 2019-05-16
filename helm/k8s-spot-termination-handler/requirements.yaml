@@ -1,0 +1,4 @@
+dependencies:
+  - name: k8s-spot-termination-handler
+    version: "1.2.1"
+    repository: "@stable"

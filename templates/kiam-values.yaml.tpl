@@ -17,6 +17,15 @@ kiam:
 
     tlsSecret: ${agent_secret}
 
+    extraArgs:
+      whitelist-route-regexp: 'spot/(instance-action|termination-time)$'
+
+    tolerations:
+    - key: "node-role.kubernetes.io/worker"
+      operator: "Equal"
+      value: "true"
+      effect: "PreferNoSchedule"
+
   server:
     podLabels:
       app.kubernetes.io/name: ${name}
@@ -33,8 +42,10 @@ kiam:
 
     tlsSecret: ${server_secret}
 
-    extraEnv:
-      GRPC_GO_LOG_SEVERITY_LEVEL: info
-      GRPC_GO_LOG_VERBOSITY: 8
+    tolerations:
+    - key: "node-role.kubernetes.io/worker"
+      operator: "Equal"
+      value: "true"
+      effect: "PreferNoSchedule"
 
 #  vim: set et fenc= ff=unix ft=yaml sts=2 sw=2 ts=2 : 

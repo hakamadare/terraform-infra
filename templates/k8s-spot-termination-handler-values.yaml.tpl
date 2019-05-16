@@ -1,4 +1,6 @@
-k8s-spot-rescheduler:
+k8s-spot-termination-handler:
+  detachAsg: "${detach_asg}"
+
   image:
     tag: "${version}"
 
