@@ -6,10 +6,14 @@ locals {
   eks_aws_profile        = "${var.vpc_name}"
   eks_admin_username     = "${var.eks_admin_username}"
   eks_map_users_count    = "${length(local.eks_map_users)}"
-  eks_instance_type      = "t3.small"
-  eks_cluster_size       = "2"
-  eks_cluster_min        = "2"
-  eks_cluster_max        = "${local.eks_cluster_size + 1}"
+  eks_ondemand_instance_type      = "t3.small"
+  eks_ondemand_cluster_min        = "1"
+  eks_ondemand_cluster_max        = "${local.eks_ondemand_cluster_min + 1}"
+  eks_spot_instance_type      = "t3.medium"
+  eks_spot_cluster_min        = "1"
+  eks_spot_cluster_max        = "${local.eks_spot_cluster_min + 2}"
+  eks_spot_price = "0.0416"
+  eks_suspended_processes = "AZRebalance"
   eks_version            = "1.12"
 
   eks_map_users = [
@@ -22,12 +26,29 @@ locals {
 
   eks_worker_groups = [
     {
-      instance_type        = "${local.eks_instance_type}"
-      asg_desired_capacity = "${local.eks_cluster_size}"
-      asg_min_size         = "${local.eks_cluster_min}"
-      asg_max_size         = "${local.eks_cluster_max}"
+      name = "ondemand"
+      instance_type        = "${local.eks_ondemand_instance_type}"
+      asg_min_size         = "${local.eks_ondemand_cluster_min}"
+      asg_max_size         = "${local.eks_ondemand_cluster_max}"
+      suspended_processes = "${local.eks_suspended_processes}"
+      autoscaling_enabled = true
+      protect_from_scale_in = true
+      kubelet_extra_args = "--node-labels=kubernetes.io/lifecycle=normal"
+    },
+    {
+      name = "spot"
+      spot_price        = "${local.eks_spot_price}"
+      instance_type        = "${local.eks_spot_instance_type}"
+      asg_min_size         = "${local.eks_spot_cluster_min}"
+      asg_max_size         = "${local.eks_spot_cluster_max}"
+      suspended_processes = "${local.eks_suspended_processes}"
+      autoscaling_enabled = true
+      protect_from_scale_in = true
+      kubelet_extra_args = "--node-labels=kubernetes.io/lifecycle=spot"
     },
   ]
+
+  eks_worker_group_count = "${length(local.eks_worker_groups)}"
 }
 
 variable "eks_admin_username" {
@@ -50,6 +71,7 @@ module "eks" {
   config_output_path             = "${local.eks_config_output_path}"
   map_users                      = "${local.eks_map_users}"
   worker_groups                  = "${local.eks_worker_groups}"
+  worker_group_count = "${local.eks_worker_group_count}"
 
   kubeconfig_aws_authenticator_env_variables = {
     AWS_PROFILE = "${local.eks_aws_profile}"
