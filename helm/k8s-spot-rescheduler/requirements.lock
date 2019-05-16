@@ -1,0 +1,6 @@
+dependencies:
+- name: k8s-spot-rescheduler
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 0.4.0
+digest: sha256:644a49231dfed0071ae9a15eb7bd9e9c46bbbfcc2f165f07565ac8c719dcb51c
+generated: 2019-05-15T22:31:34.823157-04:00

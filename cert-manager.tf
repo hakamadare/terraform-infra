@@ -48,7 +48,7 @@ resource "kubernetes_namespace" "cert_manager" {
 
 data "helm_repository" "jetstack" {
   name = "jetstack"
-  url = "https://charts.jetstack.io"
+  url  = "https://charts.jetstack.io"
 }
 
 resource "helm_release" "cert_manager" {

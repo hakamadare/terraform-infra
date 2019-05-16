@@ -18,6 +18,7 @@ if [ -d "${script_dir}" ]; then
     --tls-ca-cert ~/.helm/ca.pem  \
     --tiller-tls-verify \
     --service-account tiller \
+    --node-selectors "node-role.kubernetes.io/worker"="true" \
     --history-max 200
 
 fi

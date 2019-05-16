@@ -9,8 +9,9 @@ locals {
   kiam_recreate_pods = true
   kiam_namespace     = "${local.kiam_name}"
 
-  kiam_agent_secret    = "${local.kiam_name}-agent-tls"
-  kiam_server_secret   = "${local.kiam_name}-server-tls"
+  kiam_agent_secret  = "${local.kiam_name}-agent-tls"
+  kiam_server_secret = "${local.kiam_name}-server-tls"
+
   # kiam_agent_secret = "${local.kiam_name}-agent-manual-tls"
 
   # kiam_server_secret   = "${local.kiam_name}-server-manual-tls"
