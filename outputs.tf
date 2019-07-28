@@ -27,3 +27,11 @@ output "vpc_database_cidrs" {
 output "tiller_namespace" {
   value = "${local.tiller_namespace}"
 }
+
+output "circleci_iam_user_access_key" {
+  value = "${module.iam_user_circleci.this_iam_access_key_id}"
+}
+
+output "circleci_iam_user_secret_key_decrypt_command" {
+  value = "${module.iam_user_circleci.keybase_secret_key_decrypt_command}"
+}

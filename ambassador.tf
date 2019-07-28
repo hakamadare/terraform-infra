@@ -2,12 +2,12 @@ locals {
   ambassador_name             = "ambassador"
   ambassador_repo_url         = "https://www.getambassador.io"
   ambassador_instance         = "${local.ambassador_name}-${var.env}"
-  ambassador_version          = "v0.61.0"
+  ambassador_version          = "v0.73.0"
   ambassador_part_of          = "${var.datacenter}"
   ambassador_managed_by       = "terraform"
   ambassador_wait             = false
   ambassador_force_update     = false
-  ambassador_recreate_pods    = true
+  ambassador_recreate_pods    = false
   ambassador_daemonset        = true
   ambassador_tls_commonname   = "vecna.org"
   ambassador_tls_secret       = "ambassador-certs"

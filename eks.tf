@@ -16,7 +16,7 @@ locals {
   eks_spot_kubelet_extra_args     = "--node-labels=kubernetes.io/lifecycle=spot,node-role.kubernetes.io/spot-worker=true"
   eks_spot_price                  = "0.0416"
   eks_suspended_processes         = "AZRebalance"
-  eks_version                     = "1.12"
+  eks_version                     = "1.13"
 
   eks_map_users = [
     {

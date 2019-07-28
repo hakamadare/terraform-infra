@@ -1,0 +1,39 @@
+# Default values for static-nginx.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+deployment:
+  labels: {}
+  annotations: {}
+  podLabels: {}
+  podAnnotations: {}
+  maxSurge: 1
+  maxUnavailable: 0
+
+service:
+  type: ClusterIP
+  port: 80
+
+minAvailable: 1
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

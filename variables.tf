@@ -1,5 +1,9 @@
 # variables
 
+variable "keybase_username" {
+  type = "string"
+}
+
 variable "env" {
   type = "string"
 }
