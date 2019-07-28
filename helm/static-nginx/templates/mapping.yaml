@@ -1,0 +1,13 @@
+{{- if .Values.mapping }}
+---
+apiVersion: getambassador.io/v1
+kind:  Mapping
+metadata:
+  name:  {{ include "static-nginx.fullname" . }}
+spec:
+  {{- if .Values.mapping.host }}
+  host: {{ .Values.mapping.host | quote }}
+  {{- end }}
+  prefix: {{ .Values.mapping.prefix | default "/" | quote }}
+  service: {{ include "static-nginx.fullname" . }}
+{{- end }}

@@ -7,6 +7,9 @@ image:
 nameOverride: "${name}"
 fullnameOverride: "${name}"
 
+mapping:
+  host: "static-someguyontheinternet.vecna.org"
+
 deployment:
   podAnnotations:
     iam.amazonaws.com/role: "${iam_role}"

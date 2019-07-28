@@ -1,0 +1,4 @@
+dependencies:
+  - name: external-dns
+    version: "2.4.0"
+    repository: "@stable"
