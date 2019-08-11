@@ -1,0 +1,12 @@
+{{- if .Values.mapping }}
+---
+apiVersion: getambassador.io/v1
+kind:  Mapping
+metadata:
+  name:  {{ template "chartmuseum.fullname" . }}
+spec:
+  host: {{ required "Must provide .Values.mapping.fqdn" .Values.mapping.fqdn | quote }}
+  prefix: {{ .Values.mapping.prefix | default "/" | quote }}
+  {{- $mappingPort := .Values.mapping.port | int }}
+  service: {{ printf "http://%s.%s:%d" .Values.mapping.service .Release.Namespace $mappingPort | quote }}
+{{- end }}

@@ -100,3 +100,15 @@ variable "acme_email" {
 variable "someguyontheinternet_cdn_uuid" {
   type = "string"
 }
+
+variable "chartmuseum_fqdn" {
+  type = "string"
+}
+
+variable "chartmuseum_basic_auth_user" {
+  type = "string"
+}
+
+variable "chartmuseum_basic_auth_pass" {
+  type = "string"
+}

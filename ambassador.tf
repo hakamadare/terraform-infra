@@ -9,7 +9,6 @@ locals {
   ambassador_force_update     = false
   ambassador_recreate_pods    = false
   ambassador_daemonset        = true
-  ambassador_tls_commonname   = "vecna.org"
   ambassador_tls_secret       = "ambassador-certs"
   ambassador_acme_issuer      = "letsencrypt-prod"
   ambassador_acme_issuer_kind = "ClusterIssuer"
@@ -20,6 +19,7 @@ locals {
   ]
 
   ambassador_fqdns = [
+    "charts.vecna.org",
     "static-someguyontheinternet.vecna.org",
   ]
 
