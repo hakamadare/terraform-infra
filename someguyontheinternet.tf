@@ -10,6 +10,7 @@ locals {
   someguyontheinternet_recreate_pods     = false
   someguyontheinternet_registry          = "${module.ecr_someguyontheinternet.registry_url}"
   someguyontheinternet_image_pull_policy = "Always"
+  someguyontheinternet_cdn_uuid          = "${var.someguyontheinternet_cdn_uuid}"
 }
 
 data "template_file" "someguyontheinternet_values" {
@@ -20,6 +21,7 @@ data "template_file" "someguyontheinternet_values" {
     registry          = "${local.someguyontheinternet_registry}"
     image_pull_policy = "${local.someguyontheinternet_image_pull_policy}"
     iam_role          = "${aws_iam_role.someguyontheinternet.name}"
+    cdn_uuid          = "${local.someguyontheinternet_cdn_uuid}"
   }
 }
 

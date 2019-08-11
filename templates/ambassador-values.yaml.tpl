@@ -1,5 +1,8 @@
 tls:
-  commonName: ${tls_commonname}
+  dnsNames:
+    %{~ for dnsName in split(",", fqdns) ~}
+    - "${dnsName}"
+    %{~ endfor ~}
   secret: ${tls_secret}
   issuer:
     name: ${acme_issuer}
@@ -14,13 +17,14 @@ ambassador:
 
   service:
     type: LoadBalancer
+    externalTrafficPolicy: Local
 
     # see https://www.getambassador.io/reference/ambassador-with-aws
     annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
       service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+      external-dns.alpha.kubernetes.io/hostname: "${fqdns}"
       getambassador.io/config: |
         ---
         apiVersion: ambassador/v1
@@ -28,7 +32,10 @@ ambassador:
         name:  ambassador
         config:
           use_remote_address: true
-          use_proxy_proto: true
+          use_proxy_proto: false
+          gzip:
+            enabled: true
+            remove_accept_encoding_header: true
         ---
         apiVersion: ambassador/v1
         kind: Module

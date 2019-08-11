@@ -6,8 +6,26 @@ locals {
   iam_ecr_power_user_policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
 
+data "aws_iam_policy_document" "eks_update_kubeconfig" {
+  statement {
+    actions = [
+      "eks:DescribeCluster",
+      "eks:ListClusters",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
 data "aws_iam_policy" "ecr_power_user" {
   arn = "${local.iam_ecr_power_user_policy_arn}"
+}
+
+resource "aws_iam_policy" "eks_update_kubeconfig" {
+  name_prefix = "eks-update-kubeconfig-"
+  policy      = "${data.aws_iam_policy_document.eks_update_kubeconfig.json}"
 }
 
 module "iam_user_circleci" {
@@ -20,6 +38,11 @@ module "iam_user_circleci" {
 resource "aws_iam_user_policy_attachment" "circleci_ecr_power_user" {
   user       = "${module.iam_user_circleci.this_iam_user_name}"
   policy_arn = "${data.aws_iam_policy.ecr_power_user.arn}"
+}
+
+resource "aws_iam_user_policy_attachment" "circleci_eks_update_kubeconfig" {
+  user       = "${module.iam_user_circleci.this_iam_user_name}"
+  policy_arn = "${aws_iam_policy.eks_update_kubeconfig.arn}"
 }
 
 module "ecr_someguyontheinternet" {

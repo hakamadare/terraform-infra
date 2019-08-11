@@ -16,9 +16,6 @@ kiam:
         hostPath: /etc/pki/ca-trust/extracted/pem
         readOnly: true
 
-    extraEnv:
-      GRPC_GO_LOG_SEVERITY_LEVEL: info
-
     tlsCerts:
       certFileName: "tls.crt"
       keyFileName: "tls.key"
@@ -35,9 +32,6 @@ kiam:
         readOnly: true
 
     useHostNetwork: true
-
-    extraEnv:
-      GRPC_GO_LOG_SEVERITY_LEVEL: info
 
     tlsCerts:
       certFileName: "tls.crt"

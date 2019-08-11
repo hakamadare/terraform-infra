@@ -9,8 +9,16 @@ fullnameOverride: "${name}"
 
 mapping:
   host: "static-someguyontheinternet.vecna.org"
+  headers:
+    x-cdn-uuid: "${cdn_uuid}"
+  retry_policy:
+    retry_on: "5xx"
+    num_retries: 3
+    per_try_timeout: "5s"
 
 deployment:
+  annotations:
+    configmap.reloader.stakater.com/reload: "${name}-version"
   podAnnotations:
     iam.amazonaws.com/role: "${iam_role}"
 

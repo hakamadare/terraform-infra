@@ -18,6 +18,12 @@ locals {
   ambassador_namespaces = [
     "default",
   ]
+
+  ambassador_fqdns = [
+    "static-someguyontheinternet.vecna.org",
+  ]
+
+  ambassador_fqdns_string = "${join(",", local.ambassador_fqdns)}"
 }
 
 data "template_file" "ambassador_values" {
@@ -28,11 +34,11 @@ data "template_file" "ambassador_values" {
     env              = "${var.env}"
     version          = "${local.ambassador_version}"
     daemonset        = "${local.ambassador_daemonset}"
-    tls_commonname   = "${local.ambassador_tls_commonname}"
     tls_secret       = "${local.ambassador_tls_secret}"
     acme_issuer      = "${local.ambassador_acme_issuer}"
     acme_issuer_kind = "${local.ambassador_acme_issuer_kind}"
     acme_provider    = "${local.ambassador_acme_provider}"
+    fqdns            = "${local.ambassador_fqdns_string}"
   }
 }
 

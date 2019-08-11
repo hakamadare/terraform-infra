@@ -8,12 +8,15 @@ spec:
   issuerRef:
     name: {{ .Values.tls.issuer.name }}
     kind: {{ .Values.tls.issuer.kind }}
-  commonName: {{ .Values.tls.commonName }}
+  {{- if .Values.tls.dnsNames }}
   dnsNames:
-  - {{ .Values.tls.commonName }}
+    {{- toYaml .Values.tls.dnsNames | nindent 4 }}
+  {{- end }}
   acme:
     config:
     - dns01:
         provider: {{ .Values.acme.provider }}
+      {{- if .Values.tls.dnsNames }}
       domains:
-      - {{ .Values.tls.commonName }}
+        {{- toYaml .Values.tls.dnsNames | nindent 8 }}
+      {{- end }}

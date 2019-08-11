@@ -96,3 +96,7 @@ variable "plex_fqdn" {
 variable "acme_email" {
   type = "string"
 }
+
+variable "someguyontheinternet_cdn_uuid" {
+  type = "string"
+}

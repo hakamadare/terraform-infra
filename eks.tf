@@ -5,7 +5,8 @@ locals {
   eks_config_output_path          = "${pathexpand("~/.kube")}/"
   eks_aws_profile                 = "${var.vpc_name}"
   eks_admin_username              = "${var.eks_admin_username}"
-  eks_map_users_count             = "${length(local.eks_map_users)}"
+  eks_manage_aws_auth             = "true"
+  eks_map_users_count             = "2"
   eks_ondemand_instance_type      = "t3.small"
   eks_ondemand_cluster_min        = "1"
   eks_ondemand_cluster_max        = "${local.eks_ondemand_cluster_min + 1}"
@@ -22,6 +23,11 @@ locals {
     {
       user_arn = "${data.aws_iam_user.eks_admin.arn}"
       username = "${local.eks_admin_username}"
+      group    = "system:masters"
+    },
+    {
+      user_arn = "${module.iam_user_circleci.this_iam_user_arn}"
+      username = "${module.iam_user_circleci.this_iam_user_name}"
       group    = "system:masters"
     },
   ]
@@ -71,6 +77,7 @@ module "eks" {
   subnets            = "${local.eks_subnets}"
   vpc_id             = "${local.eks_vpc}"
   config_output_path = "${local.eks_config_output_path}"
+  manage_aws_auth    = "${local.eks_manage_aws_auth}"
   map_users          = "${local.eks_map_users}"
   worker_groups      = "${local.eks_worker_groups}"
   worker_group_count = "${local.eks_worker_group_count}"

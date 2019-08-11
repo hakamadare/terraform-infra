@@ -9,5 +9,13 @@ spec:
   host: {{ .Values.mapping.host | quote }}
   {{- end }}
   prefix: {{ .Values.mapping.prefix | default "/" | quote }}
-  service: {{ include "static-nginx.fullname" . }}
+  service: http://{{ include "static-nginx.fullname" . }}.{{ .Release.Namespace }}:80
+  {{- if .Values.mapping.headers }}
+  headers:
+    {{- toYaml .Values.mapping.headers | nindent 4 }}
+  {{- end }}
+  {{- if .Values.mapping.retry_policy }}
+  retry_policy:
+    {{- toYaml .Values.mapping.retry_policy | nindent 4 }}
+  {{- end }}
 {{- end }}
