@@ -1,7 +1,7 @@
 locals {
   kiam_name          = "kiam"
   kiam_instance      = "${local.kiam_name}-${var.env}"
-  kiam_version       = "v3.2"
+  kiam_version       = "v3.3"
   kiam_part_of       = "${var.datacenter}"
   kiam_managed_by    = "Tiller"
   kiam_wait          = false
@@ -12,9 +12,6 @@ locals {
   kiam_agent_secret  = "${local.kiam_name}-agent-tls"
   kiam_server_secret = "${local.kiam_name}-server-tls"
 
-  # kiam_agent_secret = "${local.kiam_name}-agent-manual-tls"
-
-  # kiam_server_secret   = "${local.kiam_name}-server-manual-tls"
   kiam_assume_role_arn = "${aws_iam_role.kiam_server_process.arn}"
 }
 

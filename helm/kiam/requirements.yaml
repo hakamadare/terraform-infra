@@ -1,4 +1,4 @@
 dependencies:
   - name: kiam
-    version: 2.2.4
-    repository: "@stable"
+    version: 2.6.0
+    repository: "@vecna"

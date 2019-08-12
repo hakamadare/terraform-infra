@@ -21,6 +21,8 @@ kiam:
       keyFileName: "tls.key"
       caFileName: "ca.crt"
 
+    updateStrategy: "RollingUpdate"
+
   server:
     probes:
       serverAddress: 127.0.0.1
@@ -37,3 +39,5 @@ kiam:
       certFileName: "tls.crt"
       keyFileName: "tls.key"
       caFileName: "ca.crt"
+
+    updateStrategy: "RollingUpdate"

@@ -1,6 +1,6 @@
 dependencies:
 - name: kiam
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 2.2.4
-digest: sha256:c6b37eddae8f2654e8b82a24abf008fb4246f269971165bf6d54622ed4b1e61f
-generated: 2019-05-14T20:11:54.331134-04:00
+  repository: https://charts.vecna.org
+  version: 2.6.0
+digest: sha256:93df92a7b45f2c117237b445b1a9902d920b76b89df9fb87437e4d6beff9aec3
+generated: "2019-08-11T19:00:44.437099-04:00"

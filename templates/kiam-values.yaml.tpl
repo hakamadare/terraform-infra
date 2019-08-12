@@ -12,6 +12,9 @@ kiam:
       app.kubernetes.io/part-of: ${name}-${version}
       app.kubernetes.io/managed-by: Tiller
 
+    daemonsetAnnotations:
+      secret.reloader.stakater.com/reload: "${agent_secret}"
+
     image:
       tag: ${version}
 
@@ -34,6 +37,9 @@ kiam:
       app.kubernetes.io/component: server
       app.kubernetes.io/part-of: ${name}-${version}
       app.kubernetes.io/managed-by: Tiller
+
+    daemonsetAnnotations:
+      secret.reloader.stakater.com/reload: "${server_secret}"
 
     image:
       tag: ${version}
