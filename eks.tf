@@ -12,7 +12,7 @@ locals {
   eks_ondemand_cluster_max        = "${local.eks_ondemand_cluster_min + 1}"
   eks_ondemand_kubelet_extra_args = "--node-labels=kubernetes.io/lifecycle=normal,node-role.kubernetes.io/worker=true --register-with-taints=node-role.kubernetes.io/worker=true:PreferNoSchedule"
   eks_spot_instance_type          = "t3.medium"
-  eks_spot_cluster_min            = "1"
+  eks_spot_cluster_min            = "2"
   eks_spot_cluster_max            = "${local.eks_spot_cluster_min + 2}"
   eks_spot_kubelet_extra_args     = "--node-labels=kubernetes.io/lifecycle=spot,node-role.kubernetes.io/spot-worker=true"
   eks_spot_price                  = "0.0416"
