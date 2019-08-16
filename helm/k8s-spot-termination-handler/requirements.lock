@@ -1,6 +1,6 @@
 dependencies:
 - name: k8s-spot-termination-handler
   repository: https://kubernetes-charts.storage.googleapis.com
-  version: 1.2.1
-digest: sha256:519098a4c22803c18b8d79eeb3f6d49cb17bc8c5e500a3e62ac752768b3d7699
-generated: 2019-05-15T23:09:03.489087-04:00
+  version: 1.4.3
+digest: sha256:a94374b47ce1c59402d84bafa61881c3bce651dc466c7d14b8f4e9531d7db920
+generated: "2019-08-15T22:09:27.173645-04:00"

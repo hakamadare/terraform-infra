@@ -7,4 +7,20 @@ fullnameOverride: ""
 
 k8s-spot-termination-handler:
   image:
-    tag: "1.12.0-2"
+    tag: "1.13.7-1"
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "kubernetes.io/lifecycle"
+            operator: "In"
+            values:
+            - "spot"
+
+  tolerations:
+  - key: "node-role.kubernetes.io/spot-worker"
+    operator: "Equal"
+    value: "true"
+    effect: "PreferNoSchedule"
