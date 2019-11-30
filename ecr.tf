@@ -55,3 +55,14 @@ module "ecr_someguyontheinternet" {
   principals_readonly_access = ["${aws_iam_role.someguyontheinternet.arn}"]
   max_image_count            = "${local.ecr_max_image_count}"
 }
+
+module "ecr_deeryam" {
+  source                     = "cloudposse/ecr/aws"
+  version                    = "0.6.1"
+  namespace                  = "static"
+  stage                      = "${local.ecr_stage}"
+  name                       = "deeryam"
+  principals_full_access     = ["${module.iam_user_circleci.this_iam_user_arn}"]
+  principals_readonly_access = ["${aws_iam_role.deeryam.arn}"]
+  max_image_count            = "${local.ecr_max_image_count}"
+}

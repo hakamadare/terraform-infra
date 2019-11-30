@@ -101,6 +101,10 @@ variable "someguyontheinternet_cdn_uuid" {
   type = "string"
 }
 
+variable "deeryam_cdn_uuid" {
+  type = "string"
+}
+
 variable "chartmuseum_fqdn" {
   type = "string"
 }

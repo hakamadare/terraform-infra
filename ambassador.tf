@@ -2,7 +2,7 @@ locals {
   ambassador_name             = "ambassador"
   ambassador_repo_url         = "https://www.getambassador.io"
   ambassador_instance         = "${local.ambassador_name}-${var.env}"
-  ambassador_version          = "v0.73.0"
+  ambassador_version          = "v0.75.0"
   ambassador_part_of          = "${var.datacenter}"
   ambassador_managed_by       = "terraform"
   ambassador_wait             = false
@@ -21,6 +21,7 @@ locals {
   ambassador_fqdns = [
     "charts.vecna.org",
     "static-someguyontheinternet.vecna.org",
+    "static-deeryam.vecna.org",
   ]
 
   ambassador_fqdns_string = "${join(",", local.ambassador_fqdns)}"
