@@ -3,7 +3,7 @@ locals {
   ambassador_repo_url         = "https://www.getambassador.io"
   ambassador_instance         = "${local.ambassador_name}-${var.env}"
   ambassador_version          = "v0.75.0"
-  ambassador_part_of          = "${var.datacenter}"
+  ambassador_part_of          = var.datacenter
   ambassador_managed_by       = "terraform"
   ambassador_wait             = false
   ambassador_force_update     = false
@@ -24,40 +24,41 @@ locals {
     "static-deeryam.vecna.org",
   ]
 
-  ambassador_fqdns_string = "${join(",", local.ambassador_fqdns)}"
+  ambassador_fqdns_string = join(",", local.ambassador_fqdns)
 }
 
 data "template_file" "ambassador_values" {
-  template = "${file("${path.module}/templates/ambassador-values.yaml.tpl")}"
+  template = file("${path.module}/templates/ambassador-values.yaml.tpl")
 
-  vars {
-    name             = "${local.ambassador_name}"
-    env              = "${var.env}"
-    version          = "${local.ambassador_version}"
-    daemonset        = "${local.ambassador_daemonset}"
-    tls_secret       = "${local.ambassador_tls_secret}"
-    acme_issuer      = "${local.ambassador_acme_issuer}"
-    acme_issuer_kind = "${local.ambassador_acme_issuer_kind}"
-    acme_provider    = "${local.ambassador_acme_provider}"
-    fqdns            = "${local.ambassador_fqdns_string}"
+  vars = {
+    name             = local.ambassador_name
+    env              = var.env
+    version          = local.ambassador_version
+    daemonset        = local.ambassador_daemonset
+    tls_secret       = local.ambassador_tls_secret
+    acme_issuer      = local.ambassador_acme_issuer
+    acme_issuer_kind = local.ambassador_acme_issuer_kind
+    acme_provider    = local.ambassador_acme_provider
+    fqdns            = local.ambassador_fqdns_string
   }
 }
 
 data "helm_repository" "datawire" {
   name = "datawire"
-  url  = "${local.ambassador_repo_url}"
+  url  = local.ambassador_repo_url
 }
 
 resource "helm_release" "ambassador" {
-  count         = "${length(local.ambassador_namespaces)}"
+  count         = length(local.ambassador_namespaces)
   name          = "${local.ambassador_name}-${local.ambassador_namespaces[count.index]}"
-  namespace     = "${local.ambassador_namespaces[count.index]}"
+  namespace     = local.ambassador_namespaces[count.index]
   chart         = "${path.module}/helm/ambassador"
-  wait          = "${local.ambassador_wait}"
-  force_update  = "${local.ambassador_force_update}"
-  recreate_pods = "${local.ambassador_recreate_pods}"
+  wait          = local.ambassador_wait
+  force_update  = local.ambassador_force_update
+  recreate_pods = local.ambassador_recreate_pods
 
   values = [
-    "${data.template_file.ambassador_values.rendered}",
+    data.template_file.ambassador_values.rendered,
   ]
 }
+

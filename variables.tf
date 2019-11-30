@@ -1,118 +1,119 @@
 # variables
 
 variable "keybase_username" {
-  type = "string"
+  type = string
 }
 
 variable "env" {
-  type = "string"
+  type = string
 }
 
 variable "datacenter" {
-  type = "string"
+  type = string
 }
 
 variable "ec2_keypair" {
-  type = "string"
+  type = string
 }
 
 variable "ecs_servers" {
-  type = "string"
+  type = string
 }
 
 variable "ecs_min_servers" {
-  type    = "string"
+  type    = string
   default = 2
 }
 
 variable "ecs_instance_type" {
-  type = "string"
+  type = string
 }
 
 variable "ecs_docker_storage_size" {
-  type    = "string"
+  type    = string
   default = 22
 }
 
 variable "ecs_dockerhub_email" {
-  type = "string"
+  type = string
 }
 
 variable "ecs_dockerhub_token" {
-  type = "string"
+  type = string
 }
 
 variable "apigw_deploy_stage" {
-  type = "string"
+  type = string
 }
 
 variable "rest_api_root" {
-  type = "string"
+  type = string
 }
 
 variable "vpc_name" {
-  type = "string"
+  type = string
 }
 
 variable "vpc_cidr" {
-  type    = "string"
+  type    = string
   default = "10.0.0.0/16"
 }
 
 variable "plex_docker_image" {
-  type = "string"
+  type = string
 }
 
 variable "plex_memory_hard_limit" {
-  type = "string"
+  type = string
 }
 
 variable "plex_memory_soft_limit" {
-  type = "string"
+  type = string
 }
 
 variable "plex_port" {
-  type    = "string"
+  type    = string
   default = "32400"
 }
 
 variable "plex_tz" {
-  type = "string"
+  type = string
 }
 
 variable "plex_plex_claim" {
-  type = "string"
+  type = string
 }
 
 variable "plex_desired_count" {
-  type    = "string"
+  type    = string
   default = "1"
 }
 
 variable "plex_fqdn" {
-  type = "string"
+  type = string
 }
 
 variable "acme_email" {
-  type = "string"
+  type = string
 }
 
 variable "someguyontheinternet_cdn_uuid" {
-  type = "string"
+  type = string
 }
 
 variable "deeryam_cdn_uuid" {
-  type = "string"
+  type = string
 }
 
 variable "chartmuseum_fqdn" {
-  type = "string"
+  type = string
 }
 
 variable "chartmuseum_basic_auth_user" {
-  type = "string"
+  type = string
 }
 
 variable "chartmuseum_basic_auth_pass" {
-  type = "string"
+  type = string
 }
+

@@ -14,3 +14,4 @@ data "aws_route53_zone" "deery_am" {
   name         = "deer-y.am."
   private_zone = false
 }
+

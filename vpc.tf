@@ -1,15 +1,19 @@
 # vpc
 
 locals {
-  region    = "${data.aws_region.current.name}"
-  limit_azs = "${length(local.vpc_public_cidrs)}"
+  region    = data.aws_region.current.name
+  limit_azs = length(local.vpc_public_cidrs)
   vpc_name  = "${var.vpc_name}-${local.region}"
-  vpc_azs   = "${slice(data.aws_availability_zones.available.names, 0, local.limit_azs)}"
+  vpc_azs = slice(
+    data.aws_availability_zones.available.names,
+    0,
+    local.limit_azs,
+  )
 
   vpc_public_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 8, 1)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 2)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 3)}",
+    cidrsubnet(var.vpc_cidr, 8, 1),
+    cidrsubnet(var.vpc_cidr, 8, 2),
+    cidrsubnet(var.vpc_cidr, 8, 3),
   ]
 
   vpc_public_subnet_tags = {
@@ -19,9 +23,9 @@ locals {
   }
 
   vpc_private_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 8, 10)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 20)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 30)}",
+    cidrsubnet(var.vpc_cidr, 8, 10),
+    cidrsubnet(var.vpc_cidr, 8, 20),
+    cidrsubnet(var.vpc_cidr, 8, 30),
   ]
 
   vpc_private_subnet_tags = {
@@ -31,9 +35,9 @@ locals {
   }
 
   vpc_database_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 8, 101)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 102)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 103)}",
+    cidrsubnet(var.vpc_cidr, 8, 101),
+    cidrsubnet(var.vpc_cidr, 8, 102),
+    cidrsubnet(var.vpc_cidr, 8, 103),
   ]
 
   vpc_database_subnet_tags = {
@@ -41,9 +45,9 @@ locals {
   }
 
   vpc_intra_cidrs = [
-    "${cidrsubnet(var.vpc_cidr, 8, 111)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 112)}",
-    "${cidrsubnet(var.vpc_cidr, 8, 113)}",
+    cidrsubnet(var.vpc_cidr, 8, 111),
+    cidrsubnet(var.vpc_cidr, 8, 112),
+    cidrsubnet(var.vpc_cidr, 8, 113),
   ]
 
   vpc_intra_subnet_tags = {
@@ -57,9 +61,9 @@ module "vpc" {
 
   create_vpc = true
 
-  name = "${local.vpc_name}"
-  cidr = "${var.vpc_cidr}"
-  azs  = ["${local.vpc_azs}"]
+  name = local.vpc_name
+  cidr = var.vpc_cidr
+  azs  = [local.vpc_azs]
 
   enable_dns_support      = true
   enable_dns_hostnames    = true
@@ -69,15 +73,15 @@ module "vpc" {
   single_nat_gateway     = false
   one_nat_gateway_per_az = true
 
-  public_subnets   = ["${local.vpc_public_cidrs}"]
-  private_subnets  = ["${local.vpc_private_cidrs}"]
-  database_subnets = ["${local.vpc_database_cidrs}"]
-  intra_subnets    = ["${local.vpc_intra_cidrs}"]
+  public_subnets   = [local.vpc_public_cidrs]
+  private_subnets  = [local.vpc_private_cidrs]
+  database_subnets = [local.vpc_database_cidrs]
+  intra_subnets    = [local.vpc_intra_cidrs]
 
-  public_subnet_tags   = "${local.vpc_public_subnet_tags}"
-  private_subnet_tags  = "${local.vpc_private_subnet_tags}"
-  database_subnet_tags = "${local.vpc_database_subnet_tags}"
-  intra_subnet_tags    = "${local.vpc_intra_subnet_tags}"
+  public_subnet_tags   = local.vpc_public_subnet_tags
+  private_subnet_tags  = local.vpc_private_subnet_tags
+  database_subnet_tags = local.vpc_database_subnet_tags
+  intra_subnet_tags    = local.vpc_intra_subnet_tags
 
   public_route_table_tags = {
     "tier" = "public"
@@ -93,13 +97,14 @@ module "vpc" {
 
   create_database_subnet_group = true
 
-  tags {
+  tags = {
     environment                                       = "production"
-    datacenter                                        = "${var.datacenter}"
-    region                                            = "${data.aws_region.current.name}"
+    datacenter                                        = var.datacenter
+    region                                            = data.aws_region.current.name
     "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
   }
 
   enable_s3_endpoint       = true
   enable_dynamodb_endpoint = true
 }
+
