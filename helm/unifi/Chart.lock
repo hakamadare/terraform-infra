@@ -1,0 +1,6 @@
+dependencies:
+- name: unifi
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 0.5.1
+digest: sha256:5e996aaec572fdfaec9a44f4145f00f604c8954991c9f68ed91fd4b642c718e8
+generated: "2019-11-30T12:46:30.375868-05:00"
