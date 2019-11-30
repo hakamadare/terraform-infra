@@ -1,0 +1,6 @@
+dependencies:
+- name: kiam
+  repository: https://uswitch.github.io/kiam-helm-charts/charts/
+  version: 5.3.0
+digest: sha256:5b02758ce9747c42a794d2fa003ed193a6d67fac2a90f3f8719e2f34d2e9e574
+generated: "2019-11-30T12:40:04.516563-05:00"

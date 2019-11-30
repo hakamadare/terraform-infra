@@ -1,5 +1,9 @@
-apiVersion: v1
-appVersion: "3.3"
+apiVersion: v2
+appVersion: "3.4"
 description: Install kiam using the upstream chart
 name: kiam
-version: 0.1.18
+version: 0.2.0
+dependencies:
+  - name: kiam
+    version: 5.3.0
+    repository: "@uswitch"

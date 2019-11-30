@@ -1,6 +1,0 @@
-dependencies:
-- name: kiam
-  repository: https://charts.vecna.org
-  version: 2.6.0
-digest: sha256:93df92a7b45f2c117237b445b1a9902d920b76b89df9fb87437e4d6beff9aec3
-generated: "2019-08-11T19:00:44.437099-04:00"
