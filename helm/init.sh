@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+HELM2='/usr/local/opt/helm@2/bin/helm'
+
 script_dir=$(dirname "$0")
 
 if [ -d "${script_dir}" ]; then
@@ -10,7 +12,7 @@ if [ -d "${script_dir}" ]; then
     kubectl apply -f "${helm_rbac_yaml}"
   fi
 
-  helm init \
+  $HELM2 init \
     --upgrade \
     --tiller-tls \
     --tiller-tls-cert ~/.helm/cert.pem \
