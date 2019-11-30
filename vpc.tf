@@ -57,13 +57,13 @@ locals {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "1.64.0"
+  version = "2.21.0"
 
   create_vpc = true
 
   name = local.vpc_name
   cidr = var.vpc_cidr
-  azs  = [local.vpc_azs]
+  azs  = local.vpc_azs
 
   enable_dns_support      = true
   enable_dns_hostnames    = true
@@ -73,10 +73,10 @@ module "vpc" {
   single_nat_gateway     = false
   one_nat_gateway_per_az = true
 
-  public_subnets   = [local.vpc_public_cidrs]
-  private_subnets  = [local.vpc_private_cidrs]
-  database_subnets = [local.vpc_database_cidrs]
-  intra_subnets    = [local.vpc_intra_cidrs]
+  public_subnets   = local.vpc_public_cidrs
+  private_subnets  = local.vpc_private_cidrs
+  database_subnets = local.vpc_database_cidrs
+  intra_subnets    = local.vpc_intra_cidrs
 
   public_subnet_tags   = local.vpc_public_subnet_tags
   private_subnet_tags  = local.vpc_private_subnet_tags

@@ -30,7 +30,7 @@ resource "aws_iam_policy" "eks_update_kubeconfig" {
 
 module "iam_user_circleci" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-  version = "1.0.0"
+  version = "2.3.0"
   name    = "circleci"
   pgp_key = local.iam_pgp_key
 }

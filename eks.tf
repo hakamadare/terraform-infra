@@ -6,7 +6,6 @@ locals {
   eks_aws_profile                 = var.vpc_name
   eks_admin_username              = var.eks_admin_username
   eks_manage_aws_auth             = "true"
-  eks_map_users_count             = "2"
   eks_ondemand_instance_type      = "t3.small"
   eks_ondemand_cluster_min        = "1"
   eks_ondemand_cluster_max        = local.eks_ondemand_cluster_min + 1
@@ -21,14 +20,14 @@ locals {
 
   eks_map_users = [
     {
-      user_arn = data.aws_iam_user.eks_admin.arn
+      userarn  = data.aws_iam_user.eks_admin.arn
       username = local.eks_admin_username
-      group    = "system:masters"
+      groups   = ["system:masters"]
     },
     {
-      user_arn = module.iam_user_circleci.this_iam_user_arn
+      userarn  = module.iam_user_circleci.this_iam_user_arn
       username = module.iam_user_circleci.this_iam_user_name
-      group    = "system:masters"
+      groups   = ["system:masters"]
     },
   ]
 
@@ -55,8 +54,6 @@ locals {
       protect_from_scale_in = true
     },
   ]
-
-  eks_worker_group_count = length(local.eks_worker_groups)
 }
 
 variable "eks_admin_username" {
@@ -71,7 +68,7 @@ data "aws_iam_user" "eks_admin" {
 
 module "eks" {
   source             = "terraform-aws-modules/eks/aws"
-  version            = "4.0.2"
+  version            = "7.0.0"
   cluster_name       = local.eks_cluster_name
   cluster_version    = local.eks_version
   subnets            = local.eks_subnets
@@ -80,7 +77,6 @@ module "eks" {
   manage_aws_auth    = local.eks_manage_aws_auth
   map_users          = local.eks_map_users
   worker_groups      = local.eks_worker_groups
-  worker_group_count = local.eks_worker_group_count
 
   kubeconfig_aws_authenticator_env_variables = {
     AWS_PROFILE = local.eks_aws_profile

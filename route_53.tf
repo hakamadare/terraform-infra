@@ -10,7 +10,7 @@ data "aws_route53_zone" "cloud_vecna_org" {
   private_zone = false
 }
 
-data "aws_route53_zone" "deery_am" {
+data "aws_route53_zone" "deer-y_am" {
   name         = "deer-y.am."
   private_zone = false
 }
