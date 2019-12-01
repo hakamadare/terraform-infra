@@ -24,3 +24,6 @@ dependencies:
   - name: unifi
     version: 0.5.1
     repository: "@stable"
+  - name: mongodb
+    version: 7.4.6
+    repository: "@stable"
