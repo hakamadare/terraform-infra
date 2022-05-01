@@ -45,25 +45,25 @@ resource "aws_iam_user_policy_attachment" "circleci_eks_update_kubeconfig" {
   policy_arn = aws_iam_policy.eks_update_kubeconfig.arn
 }
 
-module "ecr_someguyontheinternet" {
-  source                     = "cloudposse/ecr/aws"
-  version                    = "0.11.0"
-  namespace                  = "static"
-  stage                      = local.ecr_stage
-  name                       = "someguyontheinternet"
-  principals_full_access     = [module.iam_user_circleci.this_iam_user_arn]
-  principals_readonly_access = [aws_iam_role.someguyontheinternet.arn]
-  max_image_count            = local.ecr_max_image_count
-}
-
-module "ecr_deeryam" {
-  source                     = "cloudposse/ecr/aws"
-  version                    = "0.11.0"
-  namespace                  = "static"
-  stage                      = local.ecr_stage
-  name                       = "deeryam"
-  principals_full_access     = [module.iam_user_circleci.this_iam_user_arn]
-  principals_readonly_access = [aws_iam_role.deeryam.arn]
-  max_image_count            = local.ecr_max_image_count
-}
+# module "ecr_someguyontheinternet" {
+# source                     = "cloudposse/ecr/aws"
+# version                    = "0.34.0"
+# namespace                  = "static"
+# stage                      = local.ecr_stage
+# name                       = "someguyontheinternet"
+# principals_full_access     = [module.iam_user_circleci.this_iam_user_arn]
+# principals_readonly_access = [aws_iam_role.someguyontheinternet.arn]
+# max_image_count            = local.ecr_max_image_count
+# }
+#
+# module "ecr_deeryam" {
+# source                     = "cloudposse/ecr/aws"
+# version                    = "0.11.0"
+# namespace                  = "static"
+# stage                      = local.ecr_stage
+# name                       = "deeryam"
+# principals_full_access     = [module.iam_user_circleci.this_iam_user_arn]
+# principals_readonly_access = [aws_iam_role.deeryam.arn]
+# max_image_count            = local.ecr_max_image_count
+# }
 
