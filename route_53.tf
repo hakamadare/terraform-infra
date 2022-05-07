@@ -15,3 +15,8 @@ data "aws_route53_zone" "deer-y_am" {
   private_zone = false
 }
 
+data "aws_route53_zone" "wrong_tools" {
+  name         = "wrong.tools"
+  private_zone = false
+}
+

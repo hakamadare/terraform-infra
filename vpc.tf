@@ -16,7 +16,6 @@ locals {
   vpc_public_cidrs = [
     cidrsubnet(var.vpc_cidr, 8, 1),
     cidrsubnet(var.vpc_cidr, 8, 2),
-    cidrsubnet(var.vpc_cidr, 8, 3),
   ]
 
   vpc_public_subnet_tags = {
@@ -26,7 +25,6 @@ locals {
   vpc_private_cidrs = [
     cidrsubnet(var.vpc_cidr, 8, 10),
     cidrsubnet(var.vpc_cidr, 8, 20),
-    cidrsubnet(var.vpc_cidr, 8, 30),
   ]
 
   vpc_private_subnet_tags = {
@@ -36,7 +34,6 @@ locals {
   vpc_database_cidrs = [
     cidrsubnet(var.vpc_cidr, 8, 101),
     cidrsubnet(var.vpc_cidr, 8, 102),
-    cidrsubnet(var.vpc_cidr, 8, 103),
   ]
 
   vpc_database_subnet_tags = {
@@ -46,7 +43,6 @@ locals {
   vpc_intra_cidrs = [
     cidrsubnet(var.vpc_cidr, 8, 111),
     cidrsubnet(var.vpc_cidr, 8, 112),
-    cidrsubnet(var.vpc_cidr, 8, 113),
   ]
 
   vpc_intra_subnet_tags = {
@@ -62,7 +58,7 @@ locals {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "3.14.0"
+  version = "~> 3.14"
 
   create_vpc = true
 
@@ -107,7 +103,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "3.14.0"
+  version = "~> 3.14"
 
   vpc_id = local.vpc_id
   tags   = local.tags_all
@@ -142,8 +138,8 @@ resource "aws_security_group_rule" "s3_endpoint_ingress" {
 resource "aws_security_group_rule" "s3_endpoint_egress" {
   type              = "egress"
   protocol          = "-1"
-  from_port         = "0"
-  to_port           = "65535"
+  from_port         = 0
+  to_port           = 0
   security_group_id = aws_security_group.s3_endpoint.id
   cidr_blocks       = ["0.0.0.0/0"]
 }
