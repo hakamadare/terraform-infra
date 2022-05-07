@@ -53,7 +53,7 @@ locals {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.21.0"
+  version = "3.14.0"
 
   create_vpc = true
 
@@ -98,8 +98,21 @@ module "vpc" {
     datacenter  = var.datacenter
     region      = data.aws_region.current.name
   }
+}
 
-  enable_s3_endpoint       = true
-  enable_dynamodb_endpoint = true
+module "vpc_endpoints" {
+  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  version = "3.14.0"
+
+  vpc_id = module.vpc.vpc_id
+
+  endpoints = {
+    s3 = {
+      service = "s3"
+    }
+    # dynamodb = {
+    # service = "dynamodb"
+    # }
+  }
 }
 

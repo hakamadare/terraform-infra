@@ -1,4 +1,0 @@
-dependencies:
-  - name: chartmuseum
-    version: 2.3.1
-    repository: "@stable"

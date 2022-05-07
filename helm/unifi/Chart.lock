@@ -1,9 +1,0 @@
-dependencies:
-- name: unifi
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 0.5.1
-- name: mongodb
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 7.4.6
-digest: sha256:080b563cba2f671be432c2bd928d2cbc8c5efe649cd7015e29ed919ef970e58c
-generated: "2019-12-01T13:54:25.2006-05:00"

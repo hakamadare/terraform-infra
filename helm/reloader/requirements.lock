@@ -1,6 +1,0 @@
-dependencies:
-- name: reloader
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 1.1.1
-digest: sha256:49b8d2c96395d464c10d1dc52c63ad855a3e8c646b07cdd7b426b05eb35abdee
-generated: "2019-08-11T19:14:46.281825-04:00"
