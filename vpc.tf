@@ -4,11 +4,14 @@ locals {
   region    = data.aws_region.current.name
   limit_azs = length(local.vpc_public_cidrs)
   vpc_name  = "${var.vpc_name}-${local.region}"
+  vpc_id    = module.vpc.vpc_id
   vpc_azs = slice(
     data.aws_availability_zones.available.names,
     0,
     local.limit_azs,
   )
+
+  vpc_all_cidrs = sort(distinct(compact(concat(local.vpc_public_cidrs, local.vpc_private_cidrs, local.vpc_database_cidrs, local.vpc_intra_cidrs))))
 
   vpc_public_cidrs = [
     cidrsubnet(var.vpc_cidr, 8, 1),
@@ -48,6 +51,12 @@ locals {
 
   vpc_intra_subnet_tags = {
     "tier" = "intra"
+  }
+
+  tags_all = {
+    environment = "production"
+    datacenter  = var.datacenter
+    region      = data.aws_region.current.name
   }
 }
 
@@ -93,26 +102,48 @@ module "vpc" {
 
   create_database_subnet_group = true
 
-  tags = {
-    environment = "production"
-    datacenter  = var.datacenter
-    region      = data.aws_region.current.name
-  }
+  tags = local.tags_all
 }
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "3.14.0"
 
-  vpc_id = module.vpc.vpc_id
+  vpc_id = local.vpc_id
+  tags   = local.tags_all
 
   endpoints = {
     s3 = {
-      service = "s3"
+      service            = "s3"
+      security_group_ids = [aws_security_group.s3_endpoint.id]
     }
     # dynamodb = {
     # service = "dynamodb"
     # }
   }
+
 }
 
+resource "aws_security_group" "s3_endpoint" {
+  name_prefix = "s3-endpoint-"
+  description = "Permit access to S3 endpoint"
+  vpc_id      = local.vpc_id
+}
+
+resource "aws_security_group_rule" "s3_endpoint_ingress" {
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "443"
+  to_port           = "443"
+  cidr_blocks       = local.vpc_all_cidrs
+  security_group_id = aws_security_group.s3_endpoint.id
+}
+
+resource "aws_security_group_rule" "s3_endpoint_egress" {
+  type              = "egress"
+  protocol          = "-1"
+  from_port         = "0"
+  to_port           = "65535"
+  security_group_id = aws_security_group.s3_endpoint.id
+  cidr_blocks       = ["0.0.0.0/0"]
+}
