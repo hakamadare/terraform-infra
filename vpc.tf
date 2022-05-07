@@ -17,9 +17,7 @@ locals {
   ]
 
   vpc_public_subnet_tags = {
-    "tier"                                            = "public"
-    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                          = "shared"
+    "tier" = "public"
   }
 
   vpc_private_cidrs = [
@@ -29,9 +27,7 @@ locals {
   ]
 
   vpc_private_subnet_tags = {
-    "tier"                                            = "private"
-    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/internal_elb"                 = 1
+    "tier" = "private"
   }
 
   vpc_database_cidrs = [
@@ -98,10 +94,9 @@ module "vpc" {
   create_database_subnet_group = true
 
   tags = {
-    environment                                       = "production"
-    datacenter                                        = var.datacenter
-    region                                            = data.aws_region.current.name
-    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
+    environment = "production"
+    datacenter  = var.datacenter
+    region      = data.aws_region.current.name
   }
 
   enable_s3_endpoint       = true

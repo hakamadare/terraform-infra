@@ -2,7 +2,9 @@
 
 resource "aws_s3_bucket" "infra" {
   bucket = "${local.vpc_name}-infra"
-  region = local.region
-  acl    = "private"
 }
 
+resource "aws_s3_bucket_acl" "infra_private" {
+  bucket = aws_s3_bucket.infra.id
+  acl    = "private"
+}
