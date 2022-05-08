@@ -46,6 +46,13 @@ resource "aws_ecs_task_definition" "livekit" {
           awslogs-stream-prefix = local.identifier
         }
       }
+
+      secrets = [
+        {
+          name      = "LIVEKIT_KEYS"
+          valueFrom = data.aws_ssm_parameter.livekit_keys.arn
+        }
+      ]
     }
   ])
 
@@ -132,6 +139,16 @@ data "aws_iam_policy_document" "livekit_task_policy" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    actions = [
+      "ssm:GetParameters",
+      "ssm:GetParametersByPath",
+    ]
+    resources = [
+      replace(data.aws_ssm_parameter.livekit_keys.arn, "livekit_keys", "*")
+    ]
+  }
 }
 
 resource "aws_iam_role" "livekit" {
@@ -150,4 +167,9 @@ resource "aws_iam_policy" "livekit" {
 resource "aws_iam_role_policy_attachment" "livekit" {
   role       = aws_iam_role.livekit.name
   policy_arn = aws_iam_policy.livekit.arn
+}
+
+data "aws_ssm_parameter" "livekit_keys" {
+  name            = "/${local.identifier}/livekit_keys"
+  with_decryption = false
 }
