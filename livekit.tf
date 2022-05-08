@@ -68,7 +68,7 @@ resource "aws_ecs_service" "livekit" {
   name                               = local.identifier
   cluster                            = local.cluster_id
   task_definition                    = aws_ecs_task_definition.livekit.arn
-  desired_count                      = 0
+  desired_count                      = 1
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   propagate_tags                     = "SERVICE"
@@ -83,6 +83,16 @@ resource "aws_ecs_service" "livekit" {
     security_groups  = [aws_security_group.livekit.id]
     subnets          = module.vpc.private_subnets
     assign_public_ip = false
+  }
+
+  dynamic "load_balancer" {
+    for_each = toset(local.livekit_port_mapping)
+
+    content {
+      target_group_arn = module.livekit_lb.target_group_arns[index(local.livekit_port_mapping, load_balancer.value)]
+      container_name   = local.identifier
+      container_port   = load_balancer.value.containerPort
+    }
   }
 
   tags = local.tags_all
@@ -172,4 +182,54 @@ resource "aws_iam_role_policy_attachment" "livekit" {
 data "aws_ssm_parameter" "livekit_keys" {
   name            = "/${local.identifier}/livekit_keys"
   with_decryption = false
+}
+
+locals {
+  livekit_target_groups = [
+    for mapping in local.livekit_port_mapping :
+    {
+      name_prefix      = "${substr(mapping.protocol, 0, 1)}${mapping.containerPort}-"
+      backend_protocol = upper(mapping.protocol)
+      backend_port     = mapping.containerPort
+      target_type      = "ip"
+    }
+  ]
+
+  livekit_http_tcp_listeners = [
+    for index, mapping in local.livekit_port_mapping :
+    {
+      port               = mapping.containerPort
+      protocol           = upper(mapping.protocol)
+      target_group_index = index
+    }
+  ]
+}
+
+module "livekit_lb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "~> 6.0"
+
+  name_prefix                      = "lk-"
+  load_balancer_type               = "network"
+  vpc_id                           = local.vpc_id
+  subnets                          = module.vpc.public_subnets
+  target_groups                    = local.livekit_target_groups
+  http_tcp_listeners               = local.livekit_http_tcp_listeners
+  http_tcp_listeners_tags          = local.tags_all
+  enable_cross_zone_load_balancing = true
+  lb_tags                          = local.tags_all
+}
+
+resource "aws_route53_record" "livekit" {
+  for_each = toset(["A", "AAAA"])
+
+  zone_id = data.aws_route53_zone.wrong_tools.zone_id
+  name    = local.identifier
+  type    = each.value
+
+  alias {
+    name                   = module.livekit_lb.lb_dns_name
+    zone_id                = module.livekit_lb.lb_zone_id
+    evaluate_target_health = false
+  }
 }
