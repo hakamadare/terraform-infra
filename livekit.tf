@@ -1,5 +1,6 @@
 locals {
-  identifier = "livekit"
+  identifier            = "livekit"
+  livekit_desired_count = 0
 
   livekit_port_mapping = [
     {
@@ -50,7 +51,11 @@ resource "aws_ecs_task_definition" "livekit" {
       secrets = [
         {
           name      = "LIVEKIT_KEYS"
-          valueFrom = data.aws_ssm_parameter.livekit_keys.arn
+          valueFrom = data.aws_ssm_parameter.secrets["livekit_keys"].arn
+        },
+        {
+          name      = "LIVEKIT_CONFIG"
+          valueFrom = data.aws_ssm_parameter.secrets["livekit_config"].arn
         }
       ]
     }
@@ -68,7 +73,7 @@ resource "aws_ecs_service" "livekit" {
   name                               = local.identifier
   cluster                            = local.cluster_id
   task_definition                    = aws_ecs_task_definition.livekit.arn
-  desired_count                      = 1
+  desired_count                      = local.livekit_desired_count
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   propagate_tags                     = "SERVICE"
@@ -118,7 +123,7 @@ resource "aws_security_group_rule" "livekit_ingress" {
   from_port         = each.key
   to_port           = each.key
   protocol          = each.value
-  cidr_blocks       = module.vpc.public_subnets_cidr_blocks
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.livekit.id
 }
 
@@ -156,7 +161,7 @@ data "aws_iam_policy_document" "livekit_task_policy" {
       "ssm:GetParametersByPath",
     ]
     resources = [
-      replace(data.aws_ssm_parameter.livekit_keys.arn, "livekit_keys", "*")
+      replace(data.aws_ssm_parameter.secrets["livekit_keys"].arn, "livekit_keys", "*")
     ]
   }
 }
@@ -179,8 +184,10 @@ resource "aws_iam_role_policy_attachment" "livekit" {
   policy_arn = aws_iam_policy.livekit.arn
 }
 
-data "aws_ssm_parameter" "livekit_keys" {
-  name            = "/${local.identifier}/livekit_keys"
+data "aws_ssm_parameter" "secrets" {
+  for_each = toset(["livekit_config", "livekit_keys"])
+
+  name            = "/${local.identifier}/${each.value}"
   with_decryption = false
 }
 
@@ -192,15 +199,30 @@ locals {
       backend_protocol = upper(mapping.protocol)
       backend_port     = mapping.containerPort
       target_type      = "ip"
+
+      health_check = {
+        port     = "${mapping.protocol == "udp" ? 7880 : "traffic-port"}"
+        protocol = "TCP"
+      }
+    }
+  ]
+
+  livekit_https_listeners = [
+    for index, mapping in slice(local.livekit_port_mapping, 0, 1) :
+    {
+      port               = mapping.containerPort
+      protocol           = "TLS"
+      certificate_arn    = module.livekit_acm.acm_certificate_arn
+      target_group_index = index
     }
   ]
 
   livekit_http_tcp_listeners = [
-    for index, mapping in local.livekit_port_mapping :
+    for index, mapping in slice(local.livekit_port_mapping, 1, length(local.livekit_port_mapping)) :
     {
       port               = mapping.containerPort
       protocol           = upper(mapping.protocol)
-      target_group_index = index
+      target_group_index = index + 1
     }
   ]
 }
@@ -214,6 +236,8 @@ module "livekit_lb" {
   vpc_id                           = local.vpc_id
   subnets                          = module.vpc.public_subnets
   target_groups                    = local.livekit_target_groups
+  https_listeners                  = local.livekit_https_listeners
+  https_listeners_tags             = local.tags_all
   http_tcp_listeners               = local.livekit_http_tcp_listeners
   http_tcp_listeners_tags          = local.tags_all
   enable_cross_zone_load_balancing = true
@@ -232,4 +256,14 @@ resource "aws_route53_record" "livekit" {
     zone_id                = module.livekit_lb.lb_zone_id
     evaluate_target_health = false
   }
+}
+
+module "livekit_acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 3.0"
+
+  domain_name         = "${local.identifier}.wrong.tools"
+  zone_id             = data.aws_route53_zone.wrong_tools.zone_id
+  wait_for_validation = false
+  tags                = local.tags_all
 }
