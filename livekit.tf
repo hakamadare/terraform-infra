@@ -1,6 +1,6 @@
 locals {
   identifier            = "livekit"
-  livekit_desired_count = 0
+  livekit_desired_count = 1
 
   livekit_port_mapping = [
     {
