@@ -72,7 +72,7 @@ resource "aws_ecs_task_definition" "livekit" {
 
 resource "aws_ecs_service" "livekit" {
   name                               = local.identifier
-  cluster                            = local.cluster_id
+  cluster                            = local.fargate_cluster_id
   task_definition                    = aws_ecs_task_definition.livekit.arn
   desired_count                      = local.livekit_desired_count
   deployment_maximum_percent         = 200

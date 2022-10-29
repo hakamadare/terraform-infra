@@ -31,3 +31,8 @@ output "livekit_lb" {
 output "livekit_service" {
   value = aws_ecs_service.livekit
 }
+
+output "postgres" {
+  value     = module.postgres
+  sensitive = true
+}
