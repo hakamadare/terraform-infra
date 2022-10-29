@@ -1,6 +1,7 @@
 locals {
-  identifier            = "livekit"
-  livekit_desired_count = 1
+  identifier              = "livekit"
+  livekit_desired_count   = 1
+  livekit_container_image = "livekit/livekit-server:v1.0"
 
   livekit_port_mapping = [
     {
@@ -33,7 +34,7 @@ resource "aws_ecs_task_definition" "livekit" {
   container_definitions = jsonencode([
     {
       name      = local.identifier
-      image     = "livekit/livekit-server:v0.15"
+      image     = local.livekit_container_image
       essential = true
 
       portMappings = local.livekit_port_mapping
@@ -86,8 +87,8 @@ resource "aws_ecs_service" "livekit" {
 
   network_configuration {
     security_groups  = [aws_security_group.livekit.id]
-    subnets          = module.vpc.private_subnets
-    assign_public_ip = false
+    subnets          = module.vpc.public_subnets
+    assign_public_ip = true
   }
 
   dynamic "load_balancer" {
