@@ -117,3 +117,7 @@ variable "chartmuseum_basic_auth_pass" {
   type = string
 }
 
+variable "livekit_instance_count" {
+  type    = number
+  default = 0
+}

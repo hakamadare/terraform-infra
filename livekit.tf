@@ -1,6 +1,6 @@
 locals {
   identifier              = "livekit"
-  livekit_desired_count   = 1
+  livekit_desired_count   = var.livekit_instance_count
   livekit_container_image = "livekit/livekit-server:v1.0"
 
   livekit_port_mapping = [
