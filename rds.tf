@@ -9,7 +9,7 @@ module "postgres" {
   identifier = local.db_identifier
 
   engine               = "postgres"
-  engine_version       = "14.1"
+  engine_version       = "14.3"
   major_engine_version = "14"
   family               = "postgres14"
 
@@ -48,4 +48,11 @@ module "postgres" {
   cloudwatch_log_group_retention_in_days = 3
 
   tags = local.tags_all
+}
+
+resource "aws_ssm_parameter" "postgres_master_password" {
+  name        = "/postgres/master_password"
+  description = "Master password for postgres"
+  type        = "SecureString"
+  value       = module.postgres.db_instance_password
 }

@@ -121,3 +121,17 @@ variable "livekit_instance_count" {
   type    = number
   default = 0
 }
+
+variable "tailscale_instance_count" {
+  type    = number
+  default = 1
+}
+
+variable "gotosocial_instance_count" {
+  type    = number
+  default = 1
+}
+
+variable "gotosocial_container_image" {
+  type = string
+}

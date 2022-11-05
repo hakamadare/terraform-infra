@@ -1,5 +1,6 @@
 locals {
   fargate_cluster_id = module.ecs_fargate.ecs_cluster_id
+  ec2_cluster_id     = module.ecs_ec2.cluster_name
 
   ec2_identifier = "ec2"
 
