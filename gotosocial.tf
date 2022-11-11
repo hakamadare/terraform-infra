@@ -8,6 +8,119 @@ locals {
   gotosocial_container_image = var.gotosocial_container_image
 
   gotosocial_route_cidrs = sort(distinct(compact(concat(local.vpc_private_cidrs, local.vpc_database_cidrs, local.vpc_intra_cidrs))))
+
+  gotosocial_container_environment = [
+    {
+      name  = "GTS_HOST"
+      value = local.gotosocial_fqdn
+    },
+    {
+      name  = "GTS_PORT"
+      value = tostring(local.gotosocial_port)
+    },
+    {
+      name  = "GTS_ACCOUNT_DOMAIN"
+      value = local.gotosocial_domain
+    },
+    {
+      name  = "GTS_DB_TYPE"
+      value = "postgres"
+    },
+    {
+      name  = "GTS_DB_ADDRESS"
+      value = split(":", module.postgres.db_instance_endpoint)[0]
+    },
+    {
+      name  = "GTS_DB_USER"
+      value = local.gotosocial_identifier
+    },
+    {
+      name  = "GTS_DB_DATABASE"
+      value = local.gotosocial_identifier
+    },
+    {
+      name  = "GTS_STORAGE_BACKEND"
+      value = "s3"
+    },
+    {
+      name  = "GTS_STORAGE_S3_ENDPOINT"
+      value = "s3.amazonaws.com"
+    },
+    {
+      name  = "GTS_STORAGE_S3_BUCKET"
+      value = aws_s3_bucket.gotosocial.id
+    },
+    {
+      name  = "GTS_LETSENCRYPT_ENABLED"
+      value = "false"
+    },
+    {
+      name  = "GTS_ACCOUNTS_REGISTRATION_OPEN"
+      value = "false"
+    },
+    {
+      name  = "GTS_OIDC_ENABLED"
+      value = "true"
+    },
+    {
+      name  = "GTS_OIDC_IDP_NAME"
+      value = "Google"
+    },
+    {
+      name  = "GTS_OIDC_CLIENT_ID"
+      value = "717230484973-qt6bkfdkhob6o51smcllskuhb0onjph4.apps.googleusercontent.com"
+    },
+    {
+      name  = "GTS_OIDC_ISSUER"
+      value = "https://accounts.google.com"
+    },
+    {
+      name  = "GTS_OIDC_SCOPES"
+      value = "openid email profile"
+    },
+    {
+      name  = "GTS_SMTP_HOST"
+      value = "smtp-relay.gmail.com"
+    },
+    {
+      name  = "GTS_SMTP_PORT"
+      value = "567"
+    },
+    {
+      name  = "GTS_SMTP_FROM"
+      value = "admins@wrong.tools"
+    },
+  ]
+
+  gotosocial_container_secrets = [
+
+    {
+      name      = "GTS_DB_PASSWORD"
+      valueFrom = data.aws_ssm_parameter.gotosocial["db_password"].arn
+    },
+    {
+      name      = "GTS_OIDC_CLIENT_SECRET"
+      valueFrom = data.aws_ssm_parameter.gotosocial["oidc_client_secret"].arn
+    },
+    {
+      name      = "GTS_SMTP_USERNAME"
+      valueFrom = data.aws_ssm_parameter.gotosocial["smtp_username"].arn
+    },
+    {
+      name      = "GTS_SMTP_PASSWORD"
+      valueFrom = data.aws_ssm_parameter.gotosocial["smtp_password"].arn
+    },
+    {
+      name      = "GTS_STORAGE_S3_ACCESS_KEY"
+      valueFrom = data.aws_ssm_parameter.gotosocial["storage_s3_access_key"].arn
+    },
+    {
+      name      = "GTS_STORAGE_S3_SECRET_KEY"
+      valueFrom = data.aws_ssm_parameter.gotosocial["storage_s3_secret_key"].arn
+    },
+  ]
+
+  gotosocial_config_params = zipmap([for i in concat(local.gotosocial_container_environment, local.gotosocial_container_secrets) : i.name], [for i in concat(local.gotosocial_container_environment, local.gotosocial_container_secrets) : lookup(i, "value", "SECRET")])
 }
 
 resource "aws_cloudwatch_log_group" "gotosocial" {
@@ -47,103 +160,9 @@ resource "aws_ecs_task_definition" "gotosocial" {
         }
       ]
 
-      environment = [
-        {
-          name  = "GTS_HOST"
-          value = local.gotosocial_fqdn
-        },
-        {
-          name  = "GTS_PORT"
-          value = tostring(local.gotosocial_port)
-        },
-        {
-          name  = "GTS_ACCOUNT_DOMAIN"
-          value = local.gotosocial_domain
-        },
-        {
-          name  = "GTS_DB_TYPE"
-          value = "postgres"
-        },
-        {
-          name  = "GTS_DB_ADDRESS"
-          value = split(":", module.postgres.db_instance_endpoint)[0]
-        },
-        {
-          name  = "GTS_DB_USER"
-          value = local.gotosocial_identifier
-        },
-        {
-          name  = "GTS_DB_DATABASE"
-          value = local.gotosocial_identifier
-        },
-        {
-          name  = "GTS_STORAGE_BACKEND"
-          value = "s3"
-        },
-        {
-          name  = "GTS_STORAGE_S3_ENDPOINT"
-          value = "s3.amazonaws.com"
-        },
-        {
-          name  = "GTS_STORAGE_S3_BUCKET"
-          value = aws_s3_bucket.gotosocial.id
-        },
-        {
-          name  = "GTS_LETSENCRYPT_ENABLED"
-          value = "false"
-        },
-        {
-          name  = "GTS_OIDC_ENABLED"
-          value = "true"
-        },
-        {
-          name  = "GTS_OIDC_IDP_NAME"
-          value = "Google"
-        },
-        {
-          name  = "GTS_OIDC_CLIENT_ID"
-          value = "717230484973-qt6bkfdkhob6o51smcllskuhb0onjph4.apps.googleusercontent.com"
-        },
-        {
-          name  = "GTS_OIDC_ISSUER"
-          value = "https://accounts.google.com"
-        },
-        {
-          name  = "GTS_OIDC_SCOPES"
-          value = "openid email profile"
-        },
-        {
-          name  = "GTS_SMTP_HOST"
-          value = "smtp-relay.gmail.com"
-        },
-        {
-          name  = "GTS_SMTP_PORT"
-          value = "567"
-        },
-        {
-          name  = "GTS_SMTP_FROM"
-          value = "admins@wrong.tools"
-        },
-      ]
+      environment = local.gotosocial_container_environment
 
-      secrets = [
-        {
-          name      = "GTS_DB_PASSWORD"
-          valueFrom = data.aws_ssm_parameter.gotosocial["db_password"].arn
-        },
-        {
-          name      = "GTS_OIDC_CLIENT_SECRET"
-          valueFrom = data.aws_ssm_parameter.gotosocial["oidc_client_secret"].arn
-        },
-        {
-          name      = "GTS_SMTP_USERNAME"
-          valueFrom = data.aws_ssm_parameter.gotosocial["smtp_username"].arn
-        },
-        {
-          name      = "GTS_SMTP_PASSWORD"
-          valueFrom = data.aws_ssm_parameter.gotosocial["smtp_password"].arn
-        },
-      ]
+      secrets = local.gotosocial_container_secrets
     }
   ])
 
@@ -262,6 +281,8 @@ locals {
     "oidc_client_secret",
     "smtp_username",
     "smtp_password",
+    "storage_s3_access_key",
+    "storage_s3_secret_key",
   ]
 }
 
@@ -285,6 +306,11 @@ resource "aws_iam_policy" "gotosocial" {
 
 resource "aws_iam_role_policy_attachment" "gotosocial" {
   role       = aws_iam_role.gotosocial.name
+  policy_arn = aws_iam_policy.gotosocial.arn
+}
+
+resource "aws_iam_user_policy_attachment" "gotosocial" {
+  user       = aws_iam_user.gotosocial_s3.name
   policy_arn = aws_iam_policy.gotosocial.arn
 }
 
@@ -480,4 +506,19 @@ module "gotosocial_acm" {
 
   domain_name = local.gotosocial_fqdn
   zone_id     = local.gotosocial_zone_id
+}
+
+resource "local_sensitive_file" "gotosocial_env_file" {
+  filename = "${path.module}/.env.gotosocial"
+  content  = join("\n", formatlist("%s=%s", keys(local.gotosocial_config_params), values(local.gotosocial_config_params)))
+}
+
+resource "aws_iam_user" "gotosocial_s3" {
+  name = "gotosocial-s3"
+  tags = local.tags_all
+}
+
+resource "aws_iam_access_key" "gotosocial_s3" {
+  pgp_key = "keybase:hakamadare"
+  user    = aws_iam_user.gotosocial_s3.name
 }

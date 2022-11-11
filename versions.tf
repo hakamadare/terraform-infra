@@ -7,6 +7,10 @@ terraform {
       version = ">= 4, < 6"
 
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2"
+    }
     null = {
       source  = "hashicorp/null"
       version = "~> 3"
