@@ -49,6 +49,15 @@ locals {
     "tier" = "intra"
   }
 
+  vpc_elasticache_cidrs = [
+    cidrsubnet(var.vpc_cidr, 8, 121),
+    cidrsubnet(var.vpc_cidr, 8, 122),
+  ]
+
+  vpc_elasticache_subnet_tags = {
+    "tier" = "elasticache"
+  }
+
   tags_all = {
     environment = "production"
     datacenter  = var.datacenter
@@ -74,15 +83,17 @@ module "vpc" {
   single_nat_gateway     = false
   one_nat_gateway_per_az = true
 
-  public_subnets   = local.vpc_public_cidrs
-  private_subnets  = local.vpc_private_cidrs
-  database_subnets = local.vpc_database_cidrs
-  intra_subnets    = local.vpc_intra_cidrs
+  public_subnets      = local.vpc_public_cidrs
+  private_subnets     = local.vpc_private_cidrs
+  database_subnets    = local.vpc_database_cidrs
+  intra_subnets       = local.vpc_intra_cidrs
+  elasticache_subnets = local.vpc_elasticache_cidrs
 
-  public_subnet_tags   = local.vpc_public_subnet_tags
-  private_subnet_tags  = local.vpc_private_subnet_tags
-  database_subnet_tags = local.vpc_database_subnet_tags
-  intra_subnet_tags    = local.vpc_intra_subnet_tags
+  public_subnet_tags      = local.vpc_public_subnet_tags
+  private_subnet_tags     = local.vpc_private_subnet_tags
+  database_subnet_tags    = local.vpc_database_subnet_tags
+  intra_subnet_tags       = local.vpc_intra_subnet_tags
+  elasticache_subnet_tags = local.vpc_elasticache_subnet_tags
 
   public_route_table_tags = {
     "tier" = "public"
@@ -96,7 +107,8 @@ module "vpc" {
     "tier" = "intra"
   }
 
-  create_database_subnet_group = true
+  create_database_subnet_group    = true
+  create_elasticache_subnet_group = true
 
   tags = local.tags_all
 }

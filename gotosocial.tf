@@ -216,7 +216,7 @@ resource "aws_security_group" "gotosocial" {
 resource "aws_security_group_rule" "gotosocial_ingress" {
   type                     = "ingress"
   from_port                = 0
-  to_port                  = 0
+  to_port                  = 65535
   protocol                 = "-1"
   source_security_group_id = aws_security_group.gotosocial_alb.id
   security_group_id        = aws_security_group.gotosocial.id
@@ -225,7 +225,7 @@ resource "aws_security_group_rule" "gotosocial_ingress" {
 resource "aws_security_group_rule" "gotosocial_egress" {
   type              = "egress"
   from_port         = 0
-  to_port           = 0
+  to_port           = 65535
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.gotosocial.id
@@ -312,37 +312,6 @@ resource "aws_iam_role_policy_attachment" "gotosocial" {
 resource "aws_iam_user_policy_attachment" "gotosocial" {
   user       = aws_iam_user.gotosocial_s3.name
   policy_arn = aws_iam_policy.gotosocial.arn
-}
-
-resource "aws_route53_record" "wrong_tools_google_site_verification" {
-  zone_id = local.gotosocial_zone_id
-  type    = "CNAME"
-  name    = "f2xlyh4c7si5"
-  ttl     = 300
-  records = ["gv-gt2lrmqs7yzl54.dv.googlehosted.com"]
-}
-
-resource "aws_route53_record" "wrong_tools_apex_txt" {
-  zone_id = local.gotosocial_zone_id
-  type    = "TXT"
-  name    = ""
-  ttl     = 3600
-  records = ["v=spf1 include:_spf.google.com ~all"]
-}
-
-resource "aws_route53_record" "wrong_tools_google_mx" {
-  zone_id = local.gotosocial_zone_id
-  type    = "MX"
-  name    = ""
-  ttl     = 3600
-
-  records = [
-    "1 aspmx.l.google.com.",
-    "5 alt1.aspmx.l.google.com.",
-    "5 alt2.aspmx.l.google.com.",
-    "10 alt3.aspmx.l.google.com.",
-    "10 alt4.aspmx.l.google.com.",
-  ]
 }
 
 resource "aws_s3_bucket" "gotosocial" {
@@ -480,7 +449,7 @@ resource "aws_security_group_rule" "gotosocial_alb_ingress" {
 resource "aws_security_group_rule" "gotosocial_alb_egress" {
   type                     = "egress"
   from_port                = 0
-  to_port                  = 0
+  to_port                  = 65535
   protocol                 = "-1"
   source_security_group_id = aws_security_group.gotosocial.id
   security_group_id        = aws_security_group.gotosocial_alb.id
