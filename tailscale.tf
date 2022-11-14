@@ -7,7 +7,7 @@ locals {
   tailscale_desired_count   = var.tailscale_instance_count
   tailscale_container_image = "tailscale/tailscale:stable"
 
-  tailscale_route_cidrs = sort(distinct(compact(concat(local.vpc_private_cidrs, local.vpc_database_cidrs, local.vpc_intra_cidrs))))
+  tailscale_route_cidrs = sort(distinct(compact(concat(local.vpc_private_cidrs, local.vpc_database_cidrs, local.vpc_intra_cidrs, local.vpc_elasticache_cidrs))))
 }
 
 resource "aws_cloudwatch_log_group" "tailscale" {

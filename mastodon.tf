@@ -231,7 +231,7 @@ resource "aws_ecs_service" "mastodon" {
   propagate_tags                     = "SERVICE"
   enable_ecs_managed_tags            = true
   enable_execute_command             = true
-  health_check_grace_period_seconds  = 60
+  health_check_grace_period_seconds  = 600
 
   capacity_provider_strategy {
     base              = 0
