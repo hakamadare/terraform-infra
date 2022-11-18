@@ -26,13 +26,22 @@ resource "aws_security_group" "redis" {
   tags        = local.tags_all
 }
 
-resource "aws_security_group_rule" "redis_ingress" {
+resource "aws_security_group_rule" "mastodon_redis_ingress" {
   type                     = "ingress"
   from_port                = 6379
   to_port                  = 6379
   protocol                 = "tcp"
-  source_security_group_id = data.aws_security_group.ec2_ecs.id
+  source_security_group_id = aws_security_group.mastodon.id
   security_group_id        = aws_security_group.redis.id
+}
+
+resource "aws_security_group_rule" "ecs_ingress" {
+  type              = "ingress"
+  from_port         = 6379
+  to_port           = 6379
+  protocol          = "tcp"
+  cidr_blocks       = local.vpc_private_cidrs
+  security_group_id = aws_security_group.redis.id
 }
 
 resource "aws_security_group_rule" "redis_egress" {

@@ -47,6 +47,10 @@ locals {
       value = "false"
     },
     {
+      name  = "TRUSTED_PROXY_IP"
+      value = join(" ", local.vpc_private_cidrs)
+    },
+    {
       name  = "DB_HOST"
       value = split(":", module.postgres.db_instance_endpoint)[0]
     },
@@ -77,6 +81,22 @@ locals {
     {
       name  = "SMTP_PORT"
       value = "567"
+    },
+    {
+      name  = "SMTP_TLS"
+      value = "true"
+    },
+    {
+      name  = "SMTP_AUTH_METHOD"
+      value = "plain"
+    },
+    {
+      name  = "SMTP_DELIVERY_METHOD"
+      value = "smtp"
+    },
+    {
+      name  = "SMTP_CA_FILE"
+      value = "/etc/ssl/certs/ca-certificates.crt"
     },
     {
       name  = "SMTP_FROM_ADDRESS"
@@ -123,12 +143,16 @@ locals {
       value = "preferred_username"
     },
     {
+      name  = "OIDC_REDIRECT_URI"
+      value = "https://${local.mastodon_domain}/auth/auth/openid_connect/callback"
+    },
+    {
       name  = "OIDC_SECURITY_ASSUME_EMAIL_IS_VERIFIED"
       value = "true"
     },
     {
       name  = "OMNIAUTH_ONLY"
-      value = "true"
+      value = "false"
     },
   ]
 
@@ -180,8 +204,8 @@ resource "aws_ecs_task_definition" "mastodon" {
   family                   = local.mastodon_identifier
   requires_compatibilities = ["EC2"]
   network_mode             = "awsvpc"
-  cpu                      = 128
-  memory                   = 256
+  cpu                      = 1024
+  memory                   = 1024
   task_role_arn            = aws_iam_role.mastodon.arn
 
   container_definitions = jsonencode([
@@ -489,7 +513,7 @@ module "mastodon_alb" {
       health_check = {
         enabled             = true
         interval            = 5
-        path                = "/api/v1/instance"
+        path                = "/"
         port                = "traffic-port"
         healthy_threshold   = 2
         unhealthy_threshold = 3
