@@ -2,6 +2,7 @@ locals {
   mastodon_identifier      = "mastodon"
   mastodon_domain          = "wrong.tools"
   mastodon_fqdn            = "mas.${local.mastodon_domain}"
+  mastodon_static_fqdn     = "static.${local.mastodon_domain}"
   mastodon_port            = 3000
   mastodon_zone_id         = data.aws_route53_zone.wrong_tools.zone_id
   mastodon_desired_count   = var.mastodon_instance_count
@@ -20,7 +21,7 @@ locals {
     },
     {
       name  = "ALTERNATE_DOMAINS"
-      value = "gts.${local.mastodon_domain}"
+      value = local.mastodon_domain
     },
     {
       name  = "AUTHORIZED_FETCH"
@@ -32,7 +33,7 @@ locals {
     },
     {
       name  = "RAILS_SERVE_STATIC_FILES"
-      value = "true"
+      value = "false"
     },
     {
       name  = "RAILS_LOG_LEVEL"
@@ -108,11 +109,15 @@ locals {
     },
     {
       name  = "S3_ENDPOINT"
-      value = "s3.amazonaws.com"
+      value = "https://s3.amazonaws.com"
     },
     {
       name  = "S3_BUCKET"
       value = aws_s3_bucket.mastodon.id
+    },
+    {
+      name  = "S3_ALIAS_HOST"
+      value = local.mastodon_static_fqdn
     },
     {
       name  = "OIDC_ENABLED"
@@ -144,7 +149,7 @@ locals {
     },
     {
       name  = "OIDC_REDIRECT_URI"
-      value = "https://${local.mastodon_domain}/auth/auth/openid_connect/callback"
+      value = "https://${local.mastodon_fqdn}/auth/auth/openid_connect/callback"
     },
     {
       name  = "OIDC_SECURITY_ASSUME_EMAIL_IS_VERIFIED"
@@ -192,6 +197,10 @@ locals {
   ]
 
   mastodon_config_params = zipmap([for i in concat(local.mastodon_container_environment, local.mastodon_container_secrets) : i.name], [for i in concat(local.mastodon_container_environment, local.mastodon_container_secrets) : lookup(i, "value", "SECRET")])
+
+  mastodon_memory_soft_limit = 512
+  mastodon_memory_hard_limit = 1024
+  mastodon_cpu_limit         = 1024
 }
 
 resource "aws_cloudwatch_log_group" "mastodon" {
@@ -204,16 +213,20 @@ resource "aws_ecs_task_definition" "mastodon" {
   family                   = local.mastodon_identifier
   requires_compatibilities = ["EC2"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 1024
+  cpu                      = local.mastodon_cpu_limit
   task_role_arn            = aws_iam_role.mastodon.arn
 
   container_definitions = jsonencode([
     {
-      name       = local.mastodon_identifier
-      image      = local.mastodon_container_image
-      essential  = true
-      privileged = true
+      name              = local.mastodon_identifier
+      image             = local.mastodon_container_image
+      cpu               = local.mastodon_cpu_limit
+      memoryReservation = local.mastodon_memory_soft_limit
+      essential         = true
+      privileged        = true
+
+      mountPoints = []
+      volumesFrom = []
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -227,7 +240,9 @@ resource "aws_ecs_task_definition" "mastodon" {
 
       portMappings = [
         {
-          containerPort = local.mastodon_port
+          containerPort = local.mastodon_port,
+          hostPort      = local.mastodon_port,
+          protocol      = "tcp",
         }
       ]
 
@@ -251,7 +266,7 @@ resource "aws_ecs_service" "mastodon" {
   task_definition                    = aws_ecs_task_definition.mastodon.arn
   desired_count                      = local.mastodon_desired_count
   deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
+  deployment_minimum_healthy_percent = 0
   propagate_tags                     = "SERVICE"
   enable_ecs_managed_tags            = true
   enable_execute_command             = true
@@ -413,9 +428,26 @@ resource "aws_route53_record" "wrong_tools_google_mx" {
   ]
 }
 
+data "aws_iam_policy_document" "mastodon_static_bucket_policy" {
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.mastodon.arn}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = module.mastodon_static.cloudfront_origin_access_identity_iam_arns
+    }
+  }
+}
+
 resource "aws_s3_bucket" "mastodon" {
   bucket_prefix = "${local.mastodon_identifier}-"
   tags          = local.tags_all
+}
+
+resource "aws_s3_bucket_policy" "mastodon_static_bucket_policy" {
+  bucket = aws_s3_bucket.mastodon.id
+  policy = data.aws_iam_policy_document.mastodon_static_bucket_policy.json
 }
 
 resource "aws_s3_bucket_acl" "mastodon" {
@@ -439,18 +471,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "mastodon" {
 
     abort_incomplete_multipart_upload {
       days_after_initiation = 3
-    }
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "mastodon" {
-  bucket = aws_s3_bucket.mastodon.id
-
-  rule {
-    bucket_key_enabled = true
-
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "aws:kms"
     }
   }
 }
@@ -513,12 +533,13 @@ module "mastodon_alb" {
       health_check = {
         enabled             = true
         interval            = 5
-        path                = "/"
+        path                = "/api/v1/instance"
         port                = "traffic-port"
         healthy_threshold   = 2
         unhealthy_threshold = 3
         timeout             = 2
         protocol            = "HTTP"
+        matcher             = "200,403"
       }
     }
   ]
@@ -579,4 +600,72 @@ module "mastodon_acm" {
 resource "local_sensitive_file" "mastodon_env_file" {
   filename = "${path.module}/.env.mastodon"
   content  = join("\n", formatlist("%s=%s", keys(local.mastodon_config_params), values(local.mastodon_config_params)))
+}
+
+module "mastodon_static" {
+  source  = "terraform-aws-modules/cloudfront/aws"
+  version = "~> 3"
+
+  aliases = [local.mastodon_static_fqdn]
+
+  comment             = "Static content hosting for Mastodon"
+  enabled             = true
+  is_ipv6_enabled     = true
+  price_class         = "PriceClass_100"
+  retain_on_delete    = false
+  wait_for_deployment = false
+
+  create_origin_access_identity = true
+
+  origin_access_identities = {
+    mastodon = "Access to Mastodon bucket"
+  }
+
+  origin = {
+    mastodon = {
+      domain_name = aws_s3_bucket.mastodon.bucket_regional_domain_name
+
+      s3_origin_config = {
+        origin_access_identity = "mastodon"
+      }
+    }
+  }
+
+  default_cache_behavior = {
+    target_origin_id           = "mastodon"
+    viewer_protocol_policy     = "allow-all"
+    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
+    cached_methods             = ["GET", "HEAD"]
+    compress                   = true
+    query_string               = true
+    response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+  }
+
+  viewer_certificate = {
+    acm_certificate_arn = module.mastodon_static_cert.acm_certificate_arn
+    ssl_support_method  = "sni-only"
+  }
+}
+
+resource "aws_route53_record" "mastodon_static" {
+  for_each = toset(["A", "AAAA"])
+
+  zone_id = local.mastodon_zone_id
+  name    = local.mastodon_static_fqdn
+  type    = each.value
+
+  alias {
+    name                   = module.mastodon_static.cloudfront_distribution_domain_name
+    zone_id                = module.mastodon_static.cloudfront_distribution_hosted_zone_id
+    evaluate_target_health = false
+  }
+
+}
+
+module "mastodon_static_cert" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 3"
+
+  domain_name = local.mastodon_static_fqdn
+  zone_id     = local.mastodon_zone_id
 }
