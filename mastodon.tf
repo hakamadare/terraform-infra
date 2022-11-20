@@ -37,7 +37,7 @@ locals {
     },
     {
       name  = "RAILS_LOG_LEVEL"
-      value = "info"
+      value = "warn"
     },
     {
       name  = "NODE_ENV"
@@ -632,19 +632,34 @@ module "mastodon_static" {
   }
 
   default_cache_behavior = {
-    target_origin_id           = "mastodon"
-    viewer_protocol_policy     = "allow-all"
-    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-    cached_methods             = ["GET", "HEAD"]
-    compress                   = true
-    query_string               = true
-    response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+    target_origin_id       = "mastodon"
+    viewer_protocol_policy = "allow-all"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+    query_string           = true
+
+    cache_policy_id            = data.aws_cloudfront_cache_policy.mastodon_static.id
+    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.mastodon_static.id
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.mastodon_static.id
   }
 
   viewer_certificate = {
     acm_certificate_arn = module.mastodon_static_cert.acm_certificate_arn
     ssl_support_method  = "sni-only"
   }
+}
+
+data "aws_cloudfront_cache_policy" "mastodon_static" {
+  name = "Managed-CachingOptimized"
+}
+
+data "aws_cloudfront_origin_request_policy" "mastodon_static" {
+  name = "Managed-CORS-S3Origin"
+}
+
+data "aws_cloudfront_response_headers_policy" "mastodon_static" {
+  name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
 }
 
 resource "aws_route53_record" "mastodon_static" {
