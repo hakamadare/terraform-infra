@@ -25,7 +25,7 @@ locals {
     },
     {
       name  = "AUTHORIZED_FETCH"
-      value = "false"
+      value = "true"
     },
     {
       name  = "RAILS_ENV"
@@ -201,6 +201,12 @@ locals {
   mastodon_memory_soft_limit = 512
   mastodon_memory_hard_limit = 1024
   mastodon_cpu_limit         = 1024
+
+  mastodon_site_tags = {
+    site = local.mastodon_fqdn
+  }
+
+  mastodon_tags = merge(local.tags_all, local.mastodon_site_tags)
 }
 
 resource "aws_cloudwatch_log_group" "mastodon" {
@@ -257,7 +263,7 @@ resource "aws_ecs_task_definition" "mastodon" {
     cpu_architecture        = "ARM64"
   }
 
-  tags = local.tags_all
+  tags = local.mastodon_tags
 }
 
 resource "aws_ecs_service" "mastodon" {
@@ -290,7 +296,7 @@ resource "aws_ecs_service" "mastodon" {
     container_port   = local.mastodon_port
   }
 
-  tags = local.tags_all
+  tags = local.mastodon_tags
 }
 
 resource "aws_security_group" "mastodon" {
@@ -383,7 +389,7 @@ resource "aws_iam_role" "mastodon" {
   name_prefix        = "${local.mastodon_identifier}-"
   path               = "/ecs/"
   assume_role_policy = data.aws_iam_policy_document.mastodon_assume_role_policy.json
-  tags               = local.tags_all
+  tags               = local.mastodon_tags
 }
 
 resource "aws_iam_policy" "mastodon" {
@@ -442,7 +448,7 @@ data "aws_iam_policy_document" "mastodon_static_bucket_policy" {
 
 resource "aws_s3_bucket" "mastodon" {
   bucket_prefix = "${local.mastodon_identifier}-"
-  tags          = local.tags_all
+  tags          = local.mastodon_tags
 }
 
 resource "aws_s3_bucket_policy" "mastodon_static_bucket_policy" {
@@ -544,7 +550,7 @@ module "mastodon_alb" {
     }
   ]
 
-  tags = local.tags_all
+  tags = local.mastodon_tags
 }
 
 resource "aws_security_group" "mastodon_alb" {
@@ -552,7 +558,7 @@ resource "aws_security_group" "mastodon_alb" {
   description = "Allow inbound traffic to Mastodon"
   vpc_id      = local.vpc_id
 
-  tags = local.tags_all
+  tags = local.mastodon_tags
 }
 
 resource "aws_security_group_rule" "mastodon_alb_ingress" {
