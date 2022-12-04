@@ -127,15 +127,6 @@ variable "tailscale_instance_count" {
   default = 1
 }
 
-variable "gotosocial_instance_count" {
-  type    = number
-  default = 1
-}
-
-variable "gotosocial_container_image" {
-  type = string
-}
-
 variable "mastodon_instance_count" {
   type    = number
   default = 1
