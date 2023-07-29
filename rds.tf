@@ -19,8 +19,11 @@ module "postgres" {
 
   db_name                = "postgres"
   username               = "postgres"
-  create_random_password = true
-  random_password_length = 64
+
+  # either create a password or retrieve it from SSM
+  create_random_password = false
+  # random_password_length = 64
+  password = data.aws_ssm_parameter.postgres_master_password.value
 
   multi_az = false
 
@@ -50,9 +53,13 @@ module "postgres" {
   tags = local.tags_all
 }
 
-resource "aws_ssm_parameter" "postgres_master_password" {
-  name        = "/postgres/master_password"
-  description = "Master password for postgres"
-  type        = "SecureString"
-  value       = module.postgres.db_instance_password
+data "aws_ssm_parameter" "postgres_master_password" {
+  name     = "/postgres/master_password"
 }
+
+# resource "aws_ssm_parameter" "postgres_master_password" {
+  # name        = "/postgres/master_password"
+  # description = "Master password for postgres"
+  # type        = "SecureString"
+  # value       = module.postgres.db_instance_password
+# }
