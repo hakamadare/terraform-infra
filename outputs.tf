@@ -24,14 +24,6 @@ output "vpc_database_cidrs" {
   value = [local.vpc_database_cidrs]
 }
 
-output "livekit_lb" {
-  value = module.livekit_lb
-}
-
-output "livekit_service" {
-  value = aws_ecs_service.livekit
-}
-
 output "postgres" {
   value     = module.postgres
   sensitive = true

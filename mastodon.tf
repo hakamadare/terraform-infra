@@ -33,7 +33,7 @@ locals {
     },
     {
       name  = "RAILS_SERVE_STATIC_FILES"
-      value = "false"
+      value = "true"
     },
     {
       name  = "RAILS_LOG_LEVEL"
@@ -46,10 +46,6 @@ locals {
     {
       name  = "PREPARED_STATEMENTS"
       value = "false"
-    },
-    {
-      name  = "TRUSTED_PROXY_IP"
-      value = join(" ", local.vpc_private_cidrs)
     },
     {
       name  = "DB_HOST"
@@ -539,7 +535,7 @@ module "mastodon_alb" {
       health_check = {
         enabled             = true
         interval            = 5
-        path                = "/api/v1/instance"
+        path                = "/api/v2/instance"
         port                = "traffic-port"
         healthy_threshold   = 2
         unhealthy_threshold = 3

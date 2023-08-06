@@ -9,7 +9,7 @@ module "postgres" {
   identifier = local.db_identifier
 
   engine               = "postgres"
-  engine_version       = "14.3"
+  engine_version       = "14.7"
   major_engine_version = "14"
   family               = "postgres14"
 
@@ -17,8 +17,8 @@ module "postgres" {
   allocated_storage     = 5
   max_allocated_storage = 100
 
-  db_name                = "postgres"
-  username               = "postgres"
+  db_name  = "postgres"
+  username = "postgres"
 
   # either create a password or retrieve it from SSM
   create_random_password = false
@@ -54,12 +54,12 @@ module "postgres" {
 }
 
 data "aws_ssm_parameter" "postgres_master_password" {
-  name     = "/postgres/master_password"
+  name = "/postgres/master_password"
 }
 
 # resource "aws_ssm_parameter" "postgres_master_password" {
-  # name        = "/postgres/master_password"
-  # description = "Master password for postgres"
-  # type        = "SecureString"
-  # value       = module.postgres.db_instance_password
+# name        = "/postgres/master_password"
+# description = "Master password for postgres"
+# type        = "SecureString"
+# value       = module.postgres.db_instance_password
 # }
