@@ -578,17 +578,13 @@ resource "aws_security_group_rule" "mastodon_alb_egress" {
 }
 
 resource "aws_route53_record" "mastodon" {
-  for_each = toset(["A", "AAAA"])
-
   zone_id = local.mastodon_zone_id
   name    = local.mastodon_fqdn
-  type    = each.value
+  type    = "CNAME"
+  ttl     = 60
 
-  alias {
-    name                   = module.mastodon_alb.lb_dns_name
-    zone_id                = module.mastodon_alb.lb_zone_id
-    evaluate_target_health = false
-  }
+  records = ["vip.masto.host"]
+
 }
 
 module "mastodon_acm" {

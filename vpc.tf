@@ -13,6 +13,10 @@ locals {
 
   vpc_all_cidrs = sort(distinct(compact(concat(local.vpc_public_cidrs, local.vpc_private_cidrs, local.vpc_database_cidrs, local.vpc_intra_cidrs, local.vpc_elasticache_cidrs))))
 
+  vpc_dns_cidrs = [
+    cidrsubnet(var.vpc_cidr, 16, 2)
+  ]
+
   vpc_public_cidrs = [
     cidrsubnet(var.vpc_cidr, 8, 1),
     cidrsubnet(var.vpc_cidr, 8, 2),
